@@ -5,5 +5,7 @@
   "description": "Design and redesign UI as HTML drafts written by the current model, compared on a local canvas. No external design service.",
   "license": "MIT",
   "keywords": ["design", "ui", "mockups", "redesign", "variants", "canvas"],
-  "author": { "name": "kolezka" }
+  "author": { "name": "kolezka", "url": "https://github.com/kolezka" },
+  "homepage": "https://github.com/kolezka/design-studio",
+  "repository": "https://github.com/kolezka/design-studio"
 }

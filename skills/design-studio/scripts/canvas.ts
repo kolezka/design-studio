@@ -1,7 +1,7 @@
 // Read-only local canvas for .design/drafts: every target and draft side by side, live reload.
 // Usage: bun canvas.ts [--dir .design] [--port 4870] [--open]
 import { existsSync, readdirSync, readFileSync, statSync, watch } from "node:fs";
-import { join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 
 const { values } = parseArgs({
@@ -14,6 +14,8 @@ if (!existsSync(draftsDir)) {
   process.exit(2);
 }
 
+// The header names the project, not the full path; the path is in the tooltip.
+const projectName = basename(root) === ".design" ? basename(dirname(root)) : basename(root);
 const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]{0,80}$/;
 const STATUS_ORDER = ["baseline", "selected", "candidate", "rejected"];
 
@@ -81,8 +83,8 @@ function card(d: Draft, theme: string, width: number, height: number): string {
   const versions = d.versions.map((v) => `<a href="${src(v)}" target="_blank" rel="noopener">v${v}</a>`).join(" ");
   const status = d.meta.status ?? "candidate";
   return `<article class="card" data-status="${esc(status)}">
-  <div class="frame" style="--w:${width}px;--h:${height}px">
-    <iframe src="${src(latest)}" sandbox="allow-scripts" loading="lazy" title="${esc(d.meta.title ?? d.id)}"></iframe>
+  <div class="frame" style="aspect-ratio:${width} / ${height}">
+    <iframe src="${src(latest)}" sandbox="allow-scripts" loading="lazy" style="width:${width}px;height:${height}px" title="${esc(d.meta.title ?? d.id)}"></iframe>
   </div>
   <div class="meta">
     <div class="row"><strong>${esc(d.meta.title ?? d.id)}</strong><span class="badge">${esc(status)}</span></div>
@@ -111,18 +113,32 @@ header nav{display:flex;gap:6px}header nav a{padding:3px 10px;border:1px solid v
 main{padding:20px;display:grid;gap:32px}h2{margin:0 0 12px;font-size:15px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:20px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}.card[data-status=selected]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.card[data-status=rejected]{opacity:.55}
-.frame{position:relative;width:100%;aspect-ratio:var(--w)/var(--h);overflow:hidden;border-bottom:1px solid var(--line);container-type:inline-size}
-.frame iframe{position:absolute;top:0;left:0;width:var(--w);height:var(--h);border:0;transform-origin:0 0;transform:scale(calc(100cqw / var(--w)))}
+.frame{position:relative;width:100%;overflow:hidden;border-bottom:1px solid var(--line);background:var(--bg)}
+.frame iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0}
 .meta{padding:10px 14px;display:grid;gap:4px}.meta p{margin:0}.row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .badge{font-size:12px;padding:0 8px;border:1px solid var(--line);border-radius:99px;color:var(--muted)}.muted{color:var(--muted);font-size:12px}.error{color:#e11d48;font-size:12px}
 a{color:var(--accent)}code{font:12px ui-monospace,monospace}
 </style></head><body>
-<header><strong>Design canvas <span class="muted">${esc(root)}</span></strong><nav>
+<header><strong>Design canvas <span class="muted" title="${esc(root)}">${esc(projectName)}</span></strong><nav>
 ${link("light", width, height, "Light", theme === "light")}${link("dark", width, height, "Dark", theme === "dark")}
 ${link(theme, 1440, 900, "Desktop", width === 1440)}${link(theme, 768, 1024, "Tablet", width === 768)}${link(theme, 390, 844, "Phone", width === 390)}
 </nav></header>
 <main>${sections || `<p class="muted">No drafts yet. Each draft is drafts/&lt;target&gt;/&lt;draft&gt;/v1.html.</p>`}</main>
-<script>new EventSource("/events").onmessage = () => location.reload();</script>
+<script>
+// Scale each full-size draft down to its card. data-scale and data-height make the result checkable.
+function fit() {
+  for (const frame of document.querySelectorAll(".frame")) {
+    const iframe = frame.firstElementChild;
+    const scale = frame.clientWidth / iframe.offsetWidth;
+    iframe.style.transform = "scale(" + scale + ")";
+    frame.dataset.scale = scale.toFixed(3);
+    frame.dataset.height = String(frame.clientHeight);
+  }
+}
+addEventListener("resize", fit);
+fit();
+if (!new URLSearchParams(location.search).has("static")) new EventSource("/events").onmessage = () => location.reload();
+</script>
 </body></html>`;
 }
 
