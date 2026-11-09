@@ -22,6 +22,7 @@ interface Meta {
   direction?: string;
   status?: string;
   parent?: string | null;
+  tokens?: string;
   notes?: string;
 }
 interface Draft {
@@ -86,6 +87,7 @@ function card(d: Draft, theme: string, width: number, height: number): string {
   <div class="meta">
     <div class="row"><strong>${esc(d.meta.title ?? d.id)}</strong><span class="badge">${esc(status)}</span></div>
     ${d.meta.direction ? `<p>${esc(d.meta.direction)}</p>` : ""}
+    ${d.meta.tokens ? `<p class="muted">Style: ${esc(d.meta.tokens)}</p>` : ""}
     ${d.meta.notes ? `<p class="muted">${esc(d.meta.notes)}</p>` : ""}
     ${d.metaError ? `<p class="error">${esc(d.metaError)}</p>` : ""}
     <div class="row muted"><span><code>${esc(d.id)}</code>${d.meta.parent ? ` from <code>${esc(d.meta.parent)}</code>` : ""}</span><span>${versions} &middot; <a href="${src(latest, theme === "dark" ? "light" : "dark")}" target="_blank" rel="noopener">${theme === "dark" ? "light" : "dark"}</a></span></div>
@@ -181,5 +183,5 @@ try {
   server = serve(0); // the preferred port is taken; let the OS pick one
 }
 const address = `http://127.0.0.1:${server.port}/`;
-console.log(`Design canvas on ${address} (${root})`);
+console.log(`Design canvas on ${address} (${root}). Stop it with: kill ${process.pid}`);
 if (values.open) Bun.spawn([process.platform === "darwin" ? "open" : "xdg-open", address], { stdout: "ignore", stderr: "ignore" });

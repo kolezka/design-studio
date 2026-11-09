@@ -3,12 +3,17 @@
 ## Rendering
 
 ```bash
-bun <skill-dir>/scripts/shot.ts .design/drafts/<target>/<draft>/v1.html --theme light --out .design/shots/<target>/<draft>/v1-light-1440.png
-bun <skill-dir>/scripts/shot.ts .design/drafts/<target>/<draft>/v1.html --theme dark  --out .design/shots/<target>/<draft>/v1-dark-1440.png
-bun <skill-dir>/scripts/shot.ts .design/drafts/<target>/<draft>/v1.html --width 390 --height 844 --out .design/shots/<target>/<draft>/v1-light-390.png
+bun <skill-dir>/scripts/shot.ts --all .design                       # latest version of every draft, light and dark, plus shots/sheet-<theme>-1440x900.png
+bun <skill-dir>/scripts/shot.ts --all .design --width 390 --height 844 --theme light   # phone pass
+bun <skill-dir>/scripts/shot.ts .design/drafts/<target>/<draft>/v2.html --theme dark --height 1800   # one draft, long page
 ```
 
-Then open each PNG with the file-reading tool and look at it. `--height` sets the visible area; raise it (for example 1800) to see a long page. Below 500 px the draft is drawn in a frame of the exact width, and the grey strip on the right is not part of the design. If `shot.ts` exits non-zero, there is no screenshot: fix the cause, do not review from the source instead.
+Open the PNGs with the file-reading tool and look at them. The sheets give the overview; open the single PNG wherever the sheet shows something odd or too small to judge.
+
+- Exit 1: no screenshot. Fix the cause; do not review from the source instead.
+- Exit 4: the PNGs exist but a page threw, and the error is printed. A Tailwind error leaves the page unstyled: `@apply` works only with Tailwind utilities, so define reusable classes with `@utility`.
+- `--height` sets the visible area; file names carry width and height (`v2-dark-1440x1800.png`). Below 500 px the draft is drawn in a frame of the exact width, and the grey strip on the right is not part of the design.
+- Every render you describe must be newer than the HTML it shows. Ending each round with `--all` guarantees that.
 
 ## Checklist
 

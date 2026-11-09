@@ -53,8 +53,11 @@ One self-contained file per version, openable from disk:
 </html>
 ```
 
+- Tailwind loads from jsDelivr, so rendering needs network access. Offline, write plain CSS in a `<style>` block instead.
 - `?theme=dark` and `?theme=light` must both work; `shot.ts` and the canvas use them. Every colour class has its `dark:` pair.
 - Content comes from `context.md`: real labels, real field names, realistic values. No lorem ipsum, no invented brand.
+- Escape `<`, `>` and `&` in sample text and code (`&lt;`), or the browser swallows them as tags.
+- Reusable classes are defined with `@utility name { ... }` inside the `text/tailwindcss` block. `@apply` accepts only Tailwind utilities, not a class defined next to it.
 - Show the states the data has (empty, loading or in progress, error, long text) on the page, not only the happy path.
 - No local paths. Images are inline SVG, `data:` URIs or public `https://` URLs. Web fonts only when the design system names them.
 - Interactions are optional. When a draft has tabs or views, make the default view the important one; a `#hash` that switches views must not scroll the page.

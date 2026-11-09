@@ -8,7 +8,7 @@ What it adds over asking for a mockup directly:
 - **A baseline.** The current screen is reproduced as a draft with sample data, so every variant is compared with what exists today.
 - **One style once a direction is chosen.** `.design/design-system.md` is written from the chosen draft and every later screen uses it.
 - **Versions.** `v1.html`, `v2.html` per draft, alternatives as new drafts with a parent, all kept in `.design/` for later sessions.
-- **Looking before claiming.** `shot.ts` renders light and dark at 1440 and at real phone width (headless Chrome cannot go below 500 px; the script frames narrow widths instead of silently cropping).
+- **Looking before claiming.** `shot.ts --all .design` renders the latest version of every draft in light and dark and lays them out on one contact sheet per theme. It prints errors the page threw and exits 4, so a Tailwind compile error (which leaves the page unstyled) is not missed. Narrow widths render at the real width; headless Chrome cannot go below 500 px, so the script frames them instead of silently cropping.
 - **A canvas.** `canvas.ts` shows every draft of every screen side by side, switches light, dark, desktop, tablet and phone, and reloads when a file changes. Read only, bound to 127.0.0.1.
 
 ## Install

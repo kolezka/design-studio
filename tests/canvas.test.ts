@@ -31,7 +31,7 @@ async function start(root: string) {
 
 test("the canvas lists drafts by status and shows the latest version", async () => {
   const root = mkdtempSync(join(tmpdir(), "canvas-"));
-  draft(root, "home", "b-variant", JSON.stringify({ title: "Variant", status: "candidate" }), [1, 2]);
+  draft(root, "home", "b-variant", JSON.stringify({ title: "Variant", status: "candidate", tokens: "stone and teal" }), [1, 2]);
   draft(root, "home", "a-current", JSON.stringify({ title: "Current UI", status: "baseline" }));
   draft(root, "home", "c-old", JSON.stringify({ title: "Dropped", status: "rejected" }));
   const base = await start(root);
@@ -41,6 +41,7 @@ test("the canvas lists drafts by status and shows the latest version", async () 
   expect(order).toEqual([...order].sort((a, b) => a - b));
   expect(html).toContain('src="/d/home/b-variant/v2.html?theme=dark"');
   expect(html).toContain('sandbox="allow-scripts"');
+  expect(html).toContain("Style: stone and teal");
   const res = await fetch(`${base}/d/home/b-variant/v1.html`);
   expect(res.status).toBe(200);
   expect(await res.text()).toContain("b-variant v1");
