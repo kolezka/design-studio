@@ -104,13 +104,23 @@ Both run with Bun and need no install step.
 - Draft quality depends on the model. It was tested with Claude Opus 5.5.
 - Not affiliated with Superdesign.
 
+## DeepSeek Harness
+
+`dsh/` runs the same plugin in DeepSeek Harness (DSH) through the vendored runtime from [kolezka/claude-plugins-dsh](https://github.com/kolezka/claude-plugins-dsh) (commit `a721298`). Claude Code ignores that directory. DSH gets the `design-studio` skill; the plugin has no commands, hooks, agents or MCP servers to map. The scripts still need Bun and a Chromium browser.
+
+```bash
+dsh plugin --profile web add file:/abs/path/to/design-studio/dsh
+```
+
+Refresh the vendored runtime with `claude-plugins-dsh sync .` and check it with `claude-plugins-dsh sync --check .`. `claude-plugins-dsh inspect .` lists what DSH would register.
+
 ## Development
 
 ```bash
 bun test
 ```
 
-The tests cover the canvas: ordering, the latest version, the style line, a malformed `meta.json` shown as an error, only draft files served, a foreign `Host` refused, and, when Chrome is installed, that preview frames really have a height in a browser.
+`tests/dsh-adapter.test.ts` checks what the DSH adapter registers. The other tests cover the canvas: ordering, the latest version, the style line, a malformed `meta.json` shown as an error, only draft files served, a foreign `Host` refused, and, when Chrome is installed, that preview frames really have a height in a browser.
 
 ## License
 
