@@ -1,0 +1,3 @@
+- insert:
+    - id: claude-compat-design-studio
+      name: '@kolezka/design-studio-dsh'
