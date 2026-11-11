@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "design-studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Design and redesign UI as HTML drafts written by the current model, compared on a local canvas. No external design service.",
-  "license": "UNLICENSED",
+  "license": "SEE LICENSE IN LICENSE",
   "keywords": ["design", "ui", "mockups", "redesign", "variants", "canvas"],
   "author": { "name": "kolezka", "url": "https://github.com/kolezka" },
   "homepage": "https://github.com/kolezka/design-studio",

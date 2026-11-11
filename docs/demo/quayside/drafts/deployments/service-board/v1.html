@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deployments: service board</title>
+<script>document.documentElement.classList.toggle("dark", new URLSearchParams(location.search).get("theme") === "dark");</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+<style type="text/tailwindcss">
+  @custom-variant dark (&:where(.dark, .dark *));
+  @theme { --font-sans: ui-sans-serif, system-ui, sans-serif; }
+  @utility tile { @apply rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900; }
+  @utility env { @apply flex items-center justify-between rounded-lg bg-stone-50 px-3 py-2 text-sm dark:bg-stone-800/60; }
+  @utility dot { @apply size-2 rounded-full; }
+</style>
+</head>
+<body class="bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100">
+<div class="flex min-h-screen">
+  <aside class="w-56 shrink-0 border-r border-stone-200 bg-white px-5 py-6 dark:border-stone-800 dark:bg-stone-900">
+    <div class="mb-8 text-lg font-semibold">Quayside</div>
+    <nav class="space-y-1 text-sm">
+      <a class="block rounded-lg bg-emerald-50 px-3 py-2 font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Deployments</a>
+      <a class="block px-3 py-2 text-stone-500 dark:text-stone-400">Services</a>
+      <a class="block px-3 py-2 text-stone-500 dark:text-stone-400">Settings</a>
+    </nav>
+  </aside>
+  <main class="flex-1 px-8 py-8">
+    <div class="mb-6 flex items-center"><div><h1 class="text-2xl font-semibold">Services</h1><p class="text-sm text-stone-500 dark:text-stone-400">What runs where, per environment</p></div><button class="ml-auto rounded-full bg-emerald-700 px-4 py-2 text-sm font-medium text-white dark:bg-emerald-600">Deploy a service</button></div>
+    <div class="grid grid-cols-3 gap-4">
+      <section class="tile ring-2 ring-emerald-600/40">
+        <div class="flex items-center"><b>checkout-api</b><span class="ml-auto text-xs text-emerald-700 dark:text-emerald-400">deploying</span></div>
+        <div class="mt-4 space-y-2">
+          <div class="env"><span class="flex items-center gap-2"><span class="dot animate-pulse bg-emerald-500"></span>production</span><code class="text-xs">a91f3c2 · 62%</code></div>
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-emerald-500"></span>staging</span><code class="text-xs">9d01b7e</code></div>
+        </div>
+      </section>
+      <section class="tile ring-2 ring-red-500/40">
+        <div class="flex items-center"><b>search-indexer</b><span class="ml-auto text-xs text-red-600 dark:text-red-400">failed</span></div>
+        <div class="mt-4 space-y-2">
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-emerald-500"></span>production</span><code class="text-xs">61aa0c4</code></div>
+          <div class="env bg-red-50 dark:bg-red-950/40"><span class="flex items-center gap-2"><span class="dot bg-red-500"></span>staging</span><button class="text-xs font-medium text-red-700 dark:text-red-300">Retry 77be010</button></div>
+        </div>
+        <p class="mt-3 font-mono text-xs text-red-700 dark:text-red-300">/ready returned 503 after 120 s</p>
+      </section>
+      <section class="tile">
+        <div class="flex items-center"><b>web-frontend</b><span class="ml-auto text-xs text-stone-500 dark:text-stone-400">12:15</span></div>
+        <div class="mt-4 space-y-2">
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-emerald-500"></span>production</span><code class="text-xs">e03d9aa</code></div>
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-emerald-500"></span>staging</span><code class="text-xs">e03d9aa</code></div>
+        </div>
+      </section>
+      <section class="tile">
+        <div class="flex items-center"><b>billing-worker</b><span class="ml-auto text-xs text-amber-700 dark:text-amber-400">rolled back</span></div>
+        <div class="mt-4 space-y-2">
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-amber-500"></span>production</span><code class="text-xs">3f9b2d0</code></div>
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-emerald-500"></span>staging</span><code class="text-xs">5c2e8f1</code></div>
+        </div>
+        <p class="mt-3 text-xs text-stone-500 dark:text-stone-400">5c2e8f1: error rate 4.1% &gt; 2%</p>
+      </section>
+      <section class="tile">
+        <div class="flex items-center"><b>auth-gateway</b><span class="ml-auto text-xs text-stone-500 dark:text-stone-400">queued</span></div>
+        <div class="mt-4 space-y-2">
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-emerald-500"></span>production</span><code class="text-xs">b20c771</code></div>
+          <div class="env"><span class="flex items-center gap-2"><span class="dot bg-stone-400"></span>staging</span><code class="text-xs">b4410de next</code></div>
+        </div>
+      </section>
+      <section class="tile flex items-center justify-center border-dashed text-sm text-stone-400">No other services registered</section>
+    </div>
+  </main>
+</div>
+</body>
+</html>
