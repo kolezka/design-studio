@@ -35,6 +35,7 @@ interface Draft {
   meta: Meta;
   metaError: string | null;
   versions: number[];
+  versionHashes: Record<string, string>;
 }
 
 const isDir = (p: string) => lstatSync(p).isDirectory();
@@ -87,18 +88,25 @@ function scan(): Map<string, Draft[]> {
         console.error(`Cannot scan draft ${dir}:`, err);
         continue;
       }
+      const versionHashes: Record<string, string> = {};
       const versions = files
         .map((f) => /^v(\d+)\.html$/.exec(f))
         .filter((m): m is RegExpExecArray => m !== null)
         .filter((m) => {
-          try { return lstatSync(join(dir, m[0])).isFile(); }
+          try {
+            const stat = lstatSync(join(dir, m[0]), { bigint: true });
+            if (!stat.isFile()) throw new Error("not a regular file");
+            // Metadata avoids reading content, but identical file stats can miss a change.
+            versionHashes[String(Number(m[1]))] = [stat.dev, stat.ino, stat.size, stat.mtimeNs, stat.ctimeNs].join(":");
+            return true;
+          }
           catch (err) { console.error(`Cannot inspect version ${join(dir, m[0])}:`, err); return false; }
         })
         .map((m) => Number(m[1]))
         .sort((a, b) => a - b);
       if (!versions.length) continue;
       const { meta, error } = readMeta(dir);
-      drafts.push({ target, id, meta, metaError: error, versions });
+      drafts.push({ target, id, meta, metaError: error, versions, versionHashes });
     }
     const rank = (d: Draft) => {
       const i = STATUS_ORDER.indexOf(d.meta.status ?? "candidate");
