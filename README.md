@@ -75,7 +75,9 @@ Then talk to it: "go with the second one, but make the list denser" adds a `v2` 
 
 ## The canvas
 
-Every screen gets a row and every draft a card with a live preview, its one-line direction, its style, its versions and what it proposes that the code does not have yet. The buttons at the top switch light and dark and desktop, tablet and phone sizes. The page reloads when a draft changes. It is read only and listens on `127.0.0.1` only.
+Drafts appear as preview nodes, connected to their parent proposals. Pan and zoom the canvas, open a full preview, or choose an earlier version. Light and dark themes and desktop, tablet and phone preview sizes are available at the top. Draft changes refresh the previews without reloading the canvas.
+
+Open Full preview and click an element to prepare a change request. Selection starts enabled; choose Interact with preview to use the draft's controls instead. You can also right-click an element or use Select element on a node. Copy the request into the existing chat: the canvas does not send it to an agent or generate a proposal. Selection is best effort and may not work in every draft, especially with nested frames or restrictive content policies. In selection mode, use arrow keys to navigate the preview DOM and Enter or Space to select. The canvas is read only and listens on `127.0.0.1` only.
 
 To open it yourself, from a clone of this repository:
 
@@ -118,6 +120,7 @@ Both run with Bun and need no install step.
 - Drafts are HTML with Tailwind. Turning the chosen one into your framework's components is the implementation step, done by Claude in your stack.
 - Rendering needs Chrome or a Chromium browser, and network access for Tailwind.
 - There are no comments on the canvas and no multi-user editing. Feedback goes into the chat.
+- Drafts can run scripts and load external resources. Only open drafts from sources you trust; the preview sandbox is not a complete network isolation boundary.
 - Draft quality depends on the model. It was tested with Claude Opus 5.5.
 - Not affiliated with Superdesign.
 
