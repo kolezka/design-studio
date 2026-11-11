@@ -8,6 +8,10 @@ bun test
 
 The tests cover the canvas: ordering, the latest version, the style line, a malformed `meta.json` shown as an error, only draft files served, a foreign `Host` refused, and the theme and size switches. When Chrome and `agent-browser` are installed, browser tests also check that previews really render.
 
+## Canvas sources
+
+The Bun entry point is `skills/design-studio/scripts/canvas.ts`. The page shell, styles and browser behavior live beside it in `canvas-ui.html`, `canvas-ui.css` and `canvas-ui.browser.js`. `canvas-ui.ts` combines them with the escaped initial data when serving the page. These files ship with the skill, so users do not need a build step. The preview selection bridge is in `canvas-bridge.ts`.
+
 ## Refreshing the README screenshots
 
 The screenshots come from [`docs/demo/quayside`](demo/quayside), a fictional project with drafts only: one deployments screen with a baseline, two directions and a follow-up. Render it from a copy, so `shots/` stays out of the repository:
