@@ -35,6 +35,16 @@
 - `proposed`: everything shown that the code does not have yet, one line each with what it would need. Empty list when there is nothing.
 - `tokens`: only while no design system exists.
 
+## Cross-target variants
+
+`meta.variant` is an optional string slug identifying the same common variant across targets. Use the same slug on each draft that explicitly belongs to that variant; draft folder names do not establish membership. `meta.variantParent` is an optional string slug naming the source variant from which this alternate variant originated. Each slug starts with a letter or digit, followed by up to 80 letters, digits, `.`, `_` or `-` characters.
+
+A `variantParent` requires `variant`. All drafts declaring the same variant must agree on its origin: either omit `variantParent` on all of them or use the same value on all of them. The source variant must exist in at least one draft's `meta.variant`, and variant origins must not form cycles, including self-links. Missing sources, conflicting declarations, invalid slugs and cycles require warnings; do not silently resolve them.
+
+Variant origin is separate from version lineage. `meta.variantParent` names a cross-target variant, not a draft or version, and never replaces the exact same-target version parent in `meta.versions`.
+
+This metadata is additive and optional. Legacy drafts without `meta.variant` remain unassigned and accessible; never infer membership from folder names, titles, similar content or version edges. Migration is manual and opt-in: only add variant metadata when membership and origin are known, use consistent declarations across the drafts being assigned, and leave uncertain links unset rather than asserting them. Do not move or delete files. If the origin is uncertain, ask before declaring one.
+
 ## Version lineage
 
 Each HTML file is a graph node identified by its target, draft slug and version number. `meta.versions` is keyed by the HTML version name, such as `v1` or `v2`. Its `parent` is an object with a draft slug and a numeric version, as in the example above. Parent references always resolve within the same target. The draft and version must exist. Use an entry without a `parent`, such as `"v1": {}`, to explicitly mark a source-free root; `parent: null` is invalid in a version entry.

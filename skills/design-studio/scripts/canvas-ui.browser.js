@@ -79,6 +79,60 @@
         }
       }
     }
+    const variants = new Map();
+    for (const d of drafts) {
+      d.variant = valid(d.meta.variant) ? d.meta.variant : null;
+      d.variantWarnings = [];
+      if (Object.prototype.hasOwnProperty.call(d.meta, "variant") && !d.variant) {
+        d.variantWarnings.push("Invalid variant");
+      }
+      if (Object.prototype.hasOwnProperty.call(d.meta, "variantParent")) {
+        if (!valid(d.meta.variantParent)) d.variantWarnings.push("Invalid variant parent");
+        else if (!d.variant) d.variantWarnings.push("Variant parent without valid variant");
+      }
+      if (d.variant) {
+        if (!variants.has(d.variant)) variants.set(d.variant, { parents: new Set(), drafts: [], invalid: false });
+        const group = variants.get(d.variant);
+        group.drafts.push(d);
+        if (Object.prototype.hasOwnProperty.call(d.meta, "variantParent")) {
+          if (valid(d.meta.variantParent)) group.parents.add(d.meta.variantParent);
+          else group.invalid = true;
+        } else group.parents.add(null);
+      }
+    }
+    for (const [name, group] of variants) {
+      const parents = [...group.parents];
+      if (parents.length > 1) {
+        group.warning = "Conflicting variant parents: " + parents.map((p) => p || "(none)").join(", ");
+      } else if (group.invalid) {
+        group.warning = "Invalid variant parent declaration";
+      } else if (parents[0] && !variants.has(parents[0])) {
+        group.warning = "Missing parent variant: " + parents[0];
+      }
+      group.parent = !group.warning && parents.length === 1 ? parents[0] : null;
+    }
+    for (const [name, group] of variants) {
+      const seen = new Set();
+      let current = name;
+      while (current && variants.has(current) && !seen.has(current)) {
+        seen.add(current);
+        current = variants.get(current).parent;
+      }
+      if (current && seen.has(current)) {
+        let member = current;
+        do {
+          variants.get(member).warning = "Cycle in variant parents";
+          member = variants.get(member).parent;
+        } while (member !== current);
+      }
+    }
+    for (const group of variants.values()) {
+      if (group.warning) group.parent = null;
+      for (const d of group.drafts) {
+        d.variantParent = group.parent;
+        if (group.warning) d.variantWarnings.push(group.warning);
+      }
+    }
     const result = [];
     for (const d of drafts) {
       for (const version of d.versions) {
@@ -265,7 +319,7 @@
     for (const [k, c] of cards) c.classList.toggle("selected", k === selected);
   }
   let positions = new Map(), layoutFrame = 0;
-  const edgePaths = new Map();
+  const edgePaths = new Map(), groupHeaders = new Map(), viewHeaders = new Map();
   function animate(element, frames, options) {
     if (
       !matchMedia("(prefers-reduced-motion: reduce)").matches && element.animate
@@ -284,7 +338,6 @@
   }
   function layout() {
     const depths = new Map(),
-      columns = new Map(),
       byKey = new Map(data.map((d) => [key(d), d]));
     function depth(d) {
       const k = key(d);
@@ -294,26 +347,88 @@
       depths.set(k, n);
       return n;
     }
+    const groups = new Map();
     for (const d of data) {
-      const col = depth(d);
-      if (!columns.has(col)) columns.set(col, []);
-      columns.get(col).push(d);
+      const groupKey = d.variant || "";
+      if (!groups.has(groupKey)) groups.set(groupKey, new Map());
+      const views = groups.get(groupKey);
+      if (!views.has(d.target)) views.set(d.target, []);
+      views.get(d.target).push(d);
+    }
+    const widths = new Map(), columnX = new Map();
+    for (const d of data) {
+      const card = cards.get(key(d));
+      if (card) widths.set(depth(d), Math.max(widths.get(depth(d)) || 0, card.offsetWidth));
+    }
+    let nextX = 0;
+    for (let col = 0; col <= Math.max(-1, ...widths.keys()); col++) {
+      columnX.set(col, nextX);
+      nextX += (widths.get(col) || 0) + 90;
     }
     positions = new Map();
-    let x = 0;
-    for (const col of [...columns.keys()].sort((a, b) => a - b)) {
-      let y = 0, maxWidth = 0;
-      for (const d of columns.get(col)) {
-        const c = cards.get(key(d));
-        if (!c) continue;
-        const width = c.offsetWidth, height = c.offsetHeight;
-        positions.set(key(d), { x, y, width, height });
-        c.style.left = x + "px";
-        c.style.top = y + "px";
-        y += height + 90;
-        maxWidth = Math.max(maxWidth, width);
+    let groupY = 0;
+    for (const [variant, views] of [...groups].sort(([a], [b]) => a.localeCompare(b))) {
+      let header = groupHeaders.get(variant);
+      if (!header) {
+        header = node("div", "variant-header");
+        nodes.append(header);
+        groupHeaders.set(variant, header);
       }
-      x += maxWidth + 90;
+      const sample = views.values().next().value[0];
+      header.textContent = (variant ? "Variant: " + variant : "Unassigned variant") +
+        (sample.variantParent ? " · From variant: " + sample.variantParent : "");
+      header.style.left = "0px";
+      header.style.top = groupY + "px";
+      let y = groupY + header.offsetHeight + 24;
+      for (const [view, items] of [...views].sort(([a], [b]) => a.localeCompare(b))) {
+        const viewKey = JSON.stringify([variant, view]);
+        let viewHeader = viewHeaders.get(viewKey);
+        if (!viewHeader) {
+          viewHeader = node("div", "view-header");
+          nodes.append(viewHeader);
+          viewHeaders.set(viewKey, viewHeader);
+        }
+        viewHeader.textContent = "View: " + view;
+        viewHeader.style.left = "0px";
+        viewHeader.style.top = y + "px";
+        y += viewHeader.offsetHeight + 16;
+        const columns = new Map();
+        for (const d of items) {
+          const col = depth(d);
+          if (!columns.has(col)) columns.set(col, []);
+          columns.get(col).push(d);
+        }
+        let viewBottom = y;
+        for (const col of [...columns.keys()].sort((a, b) => a - b)) {
+          const x = columnX.get(col);
+          let columnY = y;
+          for (const d of columns.get(col)) {
+            const c = cards.get(key(d));
+            if (!c) continue;
+            const width = c.offsetWidth, height = c.offsetHeight;
+            positions.set(key(d), { x, y: columnY, width, height });
+            c.style.left = x + "px";
+            c.style.top = columnY + "px";
+            columnY += height + 90;
+          }
+          viewBottom = Math.max(viewBottom, columnY);
+        }
+        y = viewBottom + 40;
+      }
+      groupY = y + 40;
+    }
+    for (const [variant, header] of groupHeaders) {
+      if (!groups.has(variant)) {
+        header.remove();
+        groupHeaders.delete(variant);
+      }
+    }
+    for (const [viewKey, header] of viewHeaders) {
+      const [variant, view] = JSON.parse(viewKey);
+      if (!groups.has(variant) || !groups.get(variant).has(view)) {
+        header.remove();
+        viewHeaders.delete(viewKey);
+      }
     }
     const wantedEdges = new Set();
     for (const d of data) {
@@ -337,10 +452,15 @@
           y1 = pp.y + pp.height / 2,
           x2 = pos.x,
           y2 = pos.y + pos.height / 2;
+        const lane = (columnX.get(depth(d) - 1) + widths.get(depth(d) - 1) + x2) / 2,
+          direction = Math.sign(y2 - y1),
+          bend = Math.min(18, Math.abs(y2 - y1) / 2);
         path.setAttribute(
           "d",
-          "M " + x1 + " " + y1 + " C " + (x1 + 45) + " " + y1 + " " +
-            (x2 - 45) + " " + y2 + " " + x2 + " " + y2,
+          "M " + x1 + " " + y1 + " L " + (lane - bend) + " " + y1 +
+            " Q " + lane + " " + y1 + " " + lane + " " + (y1 + direction * bend) +
+            " L " + lane + " " + (y2 - direction * bend) +
+            " Q " + lane + " " + y2 + " " + (lane + bend) + " " + y2 + " L " + x2 + " " + y2,
         );
         path.dataset.source = d.parentKey;
         path.dataset.target = key(d);
@@ -438,7 +558,7 @@
       }
       c.querySelector(".index").textContent = String(i + 1).padStart(2, "0");
       c.querySelector(".node-title").textContent = title(d);
-      c.querySelector(".node-sub").textContent = d.target + " / " + d.id +
+      c.querySelector(".node-sub").textContent = "View: " + d.target + " / " + d.id +
         " / v" + d.version;
       c.querySelector("iframe").title = "Preview: " + title(d) + " v" +
         d.version;
@@ -449,6 +569,9 @@
       }
       const info = c.querySelector(".node-info");
       info.replaceChildren();
+      for (const warning of d.variantWarnings) {
+        info.append(node("p", "", "Warning: " + warning));
+      }
       for (
         const [prefix, value] of [
           ["", d.meta.direction],
@@ -477,7 +600,11 @@
   function fit() {
     if (!data.length) return;
     layout();
-    const boxes = [...positions.values()];
+    const headers = [...groupHeaders.values(), ...viewHeaders.values()];
+    const boxes = [...positions.values(), ...headers.map((header) => ({
+      x: header.offsetLeft, y: header.offsetTop,
+      width: header.offsetWidth, height: header.offsetHeight,
+    }))];
     if (!boxes.length) return;
     const minX = Math.min(...boxes.map((p) => p.x)),
       minY = Math.min(...boxes.map((p) => p.y)),
