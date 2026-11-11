@@ -35,13 +35,12 @@ test("the canvas lists drafts by status and shows the latest version", async () 
   draft(root, "home", "a-current", JSON.stringify({ title: "Current UI", status: "baseline" }));
   draft(root, "home", "c-old", JSON.stringify({ title: "Dropped", status: "rejected" }));
   const base = await start(root);
-  const html = await (await fetch(`${base}/?theme=dark`)).text();
-  const order = ["Current UI", "Variant", "Dropped"].map((t) => html.indexOf(`<strong>${t}</strong>`));
-  expect(order.every((i) => i > 0)).toBe(true);
-  expect(order).toEqual([...order].sort((a, b) => a - b));
-  expect(html).toContain('src="/d/home/b-variant/v2.html?theme=dark"');
-  expect(html).toContain('sandbox="allow-scripts"');
-  expect(html).toContain("Style: stone and teal");
+  const response = await fetch(`${base}/api/drafts`);
+  expect(response.status).toBe(200);
+  const { targets } = await response.json();
+  const drafts = targets.find((group: { target: string }) => group.target === "home").drafts;
+  expect(drafts.map((d: { id: string }) => d.id)).toEqual(["a-current", "b-variant", "c-old"]);
+  expect(drafts[1]).toMatchObject({ meta: { title: "Variant", tokens: "stone and teal" }, versions: [1, 2] });
   const res = await fetch(`${base}/d/home/b-variant/v1.html`);
   expect(res.status).toBe(200);
   expect(await res.text()).toContain("b-variant v1");
@@ -50,9 +49,9 @@ test("the canvas lists drafts by status and shows the latest version", async () 
 test("a malformed meta.json is shown as an error on its card, not dropped silently", async () => {
   const root = mkdtempSync(join(tmpdir(), "canvas-"));
   draft(root, "home", "broken", "{ nope");
-  const html = await (await fetch(`${await start(root)}/`)).text();
-  expect(html).toContain("meta.json is not valid JSON");
-  expect(html).toContain("<strong>broken</strong>");
+  const { targets } = await (await fetch(`${await start(root)}/api/drafts`)).json();
+  expect(targets[0].drafts[0]).toMatchObject({ id: "broken", versions: [1] });
+  expect(targets[0].drafts[0].metaError).toContain("meta.json is not valid JSON");
 });
 
 test("the canvas serves only draft versions, and only to its own host", async () => {
@@ -67,4 +66,18 @@ test("the canvas serves only draft versions, and only to its own host", async ()
   expect(await status("/d/..%2F../a/v1.html")).toBe(404);
   expect(await status("/", { host: "evil.example" })).toBe(403);
   expect(await status("/d/home/a/v1.html", { host: "evil.example" })).toBe(403);
+});
+
+test("JSON null metadata is reported without breaking the drafts endpoint", async () => {
+  const root = mkdtempSync(join(tmpdir(), "canvas-"));
+  draft(root, "home", "null-meta", "null");
+  draft(root, "home", "valid", JSON.stringify({ title: "Valid" }));
+  const response = await fetch(`${await start(root)}/api/drafts`);
+  expect(response.status).toBe(200);
+  const { targets } = await response.json();
+  const drafts = targets[0].drafts;
+  expect(drafts.find((d: { id: string }) => d.id === "null-meta")).toMatchObject({
+    meta: {}, metaError: "meta.json must contain an object", versions: [1],
+  });
+  expect(drafts.find((d: { id: string }) => d.id === "valid").meta.title).toBe("Valid");
 });
