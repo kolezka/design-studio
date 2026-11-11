@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, renameSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -48,11 +48,52 @@ test("rejects symlinked directories and non-regular metadata and versions withou
   expect(targets.map((target: { target: string }) => target.target)).toEqual(["home"]);
   expect(targets[0].drafts.map((draft: { id: string }) => draft.id)).toEqual(["good"]);
   expect(targets[0].drafts[0].versions).toEqual([1]);
+  expect(Object.keys(targets[0].drafts[0].versionHashes)).toEqual(["1"]);
+  expect(typeof targets[0].drafts[0].versionHashes["1"]).toBe("string");
   expect(targets[0].drafts[0].metaError).toBeTruthy();
   for (const path of ["/d/linked-target/draft/v1.html", "/d/home/linked-draft/v1.html", "/d/home/good/v2.html", "/d/home/good/v3.html"]) {
     expect((await fetch(base + path, { signal: AbortSignal.timeout(3000) })).status).toBe(404);
   }
   expect(await (await fetch(`${base}/d/home/good/v1.html`)).text()).toContain("safe content");
+});
+
+test("version fingerprints stay stable and change on same-size file replacements", async () => {
+  const root = mkdtempSync(join(tmpdir(), "canvas-files-"));
+  roots.push(root);
+  const dir = join(root, ".design", "drafts", "home", "draft");
+  mkdirSync(dir, { recursive: true });
+  const version = join(dir, "v1.html");
+  writeFileSync(version, "original");
+  const base = await start(root);
+  const fingerprint = async () => {
+    const response = await fetch(`${base}/api/drafts`, { signal: AbortSignal.timeout(3000) });
+    expect(response.status).toBe(200);
+    const { targets } = await response.json();
+    const draft = targets[0].drafts[0];
+    expect(draft.versions).toEqual([1]);
+    expect(typeof draft.versionHashes["1"]).toBe("string");
+    expect(draft.versionHashes["1"].length).toBeGreaterThan(0);
+    return draft.versionHashes["1"] as string;
+  };
+
+  const initial = await fingerprint();
+  expect(await fingerprint()).toBe(initial);
+  const originalTime = statSync(version).mtime;
+  writeFileSync(version, "modified");
+  utimesSync(version, originalTime, originalTime);
+  expect(statSync(version).size).toBe(8);
+  const overwritten = await fingerprint();
+  expect(overwritten).not.toBe(initial);
+  expect(await fingerprint()).toBe(overwritten);
+
+  const replacement = join(dir, "replacement.tmp");
+  writeFileSync(replacement, "replaced");
+  utimesSync(replacement, originalTime, originalTime);
+  renameSync(replacement, version);
+  expect(statSync(version).size).toBe(8);
+  const renamed = await fingerprint();
+  expect(renamed).not.toBe(overwritten);
+  expect(await fingerprint()).toBe(renamed);
 });
 
 test("a FIFO metadata file does not block other drafts", async () => {

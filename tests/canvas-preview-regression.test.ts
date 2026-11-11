@@ -21,8 +21,7 @@ test.skipIf(!chrome || !browser)("preview keeps device dimensions and requests d
   await run("set", "viewport", "1600", "1000");
   await run("open", `http://127.0.0.1:${server.port}/?static=1`);
   await run("wait", "--text", "first");
-  const click = (id: string, index: number) => evaluate(`([...document.querySelectorAll('article')].find(c => c.querySelector('.node-title').textContent === '${id}').querySelectorAll('button')[${index}].click(), true)`);
-  await run("select", '[aria-label="Version for first"]', "0");
+  const click = (id: string, index: number) => evaluate(`(document.querySelector('article[data-node="home/${id}/v0"]').querySelectorAll('button')[${index}].click(), true)`);
   await click("first", 0);
   expect(await evaluate("document.querySelector('#request').value")).toContain("home/first (v0)");
   await run("fill", "#description", "Make it blue");
@@ -37,7 +36,7 @@ test.skipIf(!chrome || !browser)("preview keeps device dimensions and requests d
   expect(size).toEqual([390, 844]);
   await run("fill", "#description", "Full preview change");
   await evaluate("(document.querySelector('#dialog').close(), true)");
-  await evaluate(`(() => { const f = [...document.querySelectorAll('article')].find(c => c.querySelector('.node-title').textContent === 'second').querySelector('iframe'); window.dispatchEvent(new MessageEvent('message', { origin: 'null', source: f.contentWindow, data: { type: 'design-studio:selection', nonce: f.dataset.nonce, selector: 'h1', text: 'Preview', context: true } })); return true; })()`);
+  await evaluate(`(() => { const f = document.querySelector('article[data-node="home/second/v0"] iframe'); window.dispatchEvent(new MessageEvent('message', { origin: 'null', source: f.contentWindow, data: { type: 'design-studio:selection', nonce: f.dataset.nonce, selector: 'h1', text: 'Preview', context: true } })); return true; })()`);
   expect(await evaluate("document.querySelector('#description').value")).toBe("");
 }, 60_000);
 

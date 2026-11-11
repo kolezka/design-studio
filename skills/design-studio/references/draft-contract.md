@@ -21,7 +21,10 @@
   "title": "Two-column workspace",
   "direction": "One screen: sources left, search right, settings behind a tab.",
   "status": "candidate",
-  "parent": "current",
+  "versions": {
+    "v1": { "parent": { "draft": "current", "version": 1 } },
+    "v2": { "parent": { "draft": "two-column", "version": 1 } }
+  },
   "tokens": "zinc neutrals, indigo accent, system fonts, 8px radius",
   "proposed": ["Token meter in the search header (the API returns tokens and maxTokens)"],
   "notes": "v2: denser rows after feedback"
@@ -31,6 +34,16 @@
 - `status`: `baseline`, `candidate`, `selected` or `rejected`.
 - `proposed`: everything shown that the code does not have yet, one line each with what it would need. Empty list when there is nothing.
 - `tokens`: only while no design system exists.
+
+## Version lineage
+
+Each HTML file is a graph node identified by its target, draft slug and version number. `meta.versions` is keyed by the HTML version name, such as `v1` or `v2`. Its `parent` is an object with a draft slug and a numeric version, as in the example above. Parent references always resolve within the same target. The draft and version must exist. Use an entry without a `parent`, such as `"v1": {}`, to explicitly mark a source-free root; `parent: null` is invalid in a version entry.
+
+For every newly created version that has a source, explicitly record its exact parent in `meta.versions`. A baseline is a root and has no parent. When a baseline exists, the first version of each initial variant branches from that baseline. Without a baseline, a genuinely source-free initial variant is a root; every other new nonbaseline version requires an explicit parent. An iteration stays in its draft folder and points to the version it builds on. An alternative direction uses a new draft folder and points to the exact selected source version, even when that version is not the latest. Never infer user approval from a graph edge or a direction choice: approval covers only the choices and scope explicitly stated by the user. Ask when the source or approval scope is unclear.
+
+Preserve existing HTML files and metadata. Legacy draft-level `parent` is a fallback for a first version only when the referenced parent draft has exactly one existing version. If it has multiple versions, the first-version parent is ambiguous and remains unresolved; do not silently choose the latest. For a subsequent version with no version entry, infer the previous numbered existing version in the same draft, and display that edge as dashed and inferred. An explicit entry without a parent marks a root instead. Do not write inferred edges back as explicit facts.
+
+Missing or invalid references and cycles must produce warnings rather than silently asserting a lineage. Ambiguous legacy parents also produce a warning. Inspect the actual nodes and edges in the browser canvas after creating or changing drafts, including the selected parent version and any inferred edges or warnings. A metadata edit alone is not graph verification.
 
 ## The HTML file
 
