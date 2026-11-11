@@ -1,0 +1,9 @@
+{
+  "title": "Timeline",
+  "direction": "Deployments as a timeline: what needs attention first, finished runs below, one colour per status.",
+  "status": "selected",
+  "parent": "current",
+  "tokens": "slate neutrals, violet-600 accent (dark: violet-500), system sans, 12px radius",
+  "proposed": ["Queue reason (\"waiting for search-indexer\") needs the scheduler to expose blocking deploys"],
+  "notes": "v2: denser rows after feedback, failures and running deploys grouped on top"
+}

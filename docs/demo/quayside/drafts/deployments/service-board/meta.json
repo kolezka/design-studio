@@ -1,0 +1,8 @@
+{
+  "title": "Service board",
+  "direction": "One tile per service with its version in every environment; deploy history moves behind the tile.",
+  "status": "candidate",
+  "parent": "current",
+  "tokens": "stone neutrals, emerald-700 accent (dark: emerald-600), system sans, 16px radius, sidebar shell",
+  "proposed": ["Per-environment version on each tile needs a services endpoint; today only the deploy list exists"]
+}

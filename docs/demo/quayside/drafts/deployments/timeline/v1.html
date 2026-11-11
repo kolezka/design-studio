@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deployments: timeline</title>
+<script>document.documentElement.classList.toggle("dark", new URLSearchParams(location.search).get("theme") === "dark");</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+<style type="text/tailwindcss">
+  @custom-variant dark (&:where(.dark, .dark *));
+  @theme { --font-sans: ui-sans-serif, system-ui, sans-serif; }
+  @utility card { @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900; }
+  @utility pill { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+<header class="flex items-center gap-8 border-b border-slate-200 bg-white px-8 py-4 dark:border-slate-800 dark:bg-slate-900">
+  <span class="text-lg font-semibold">Quayside</span>
+  <nav class="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
+    <a class="font-medium text-violet-700 dark:text-violet-400">Deployments</a><a>Services</a><a>Settings</a>
+  </nav>
+  <button class="ml-auto rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white dark:bg-violet-500">New deployment</button>
+</header>
+<main class="mx-auto max-w-4xl space-y-8 px-8 py-8">
+  <div class="flex items-end justify-between">
+    <div><h1 class="text-2xl font-semibold">Deployments</h1><p class="text-sm text-slate-500 dark:text-slate-400">Last 24 hours, newest first</p></div>
+    <div class="flex gap-2 text-sm"><span class="pill bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">All environments</span><span class="pill bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">production</span><span class="pill bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">staging</span></div>
+  </div>
+  <section class="space-y-4">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-slate-400">Today</h2>
+    <article class="card border-l-4 border-l-violet-500">
+      <div class="flex items-center gap-3"><span class="pill bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"><span class="size-1.5 animate-pulse rounded-full bg-violet-500"></span>Deploying</span><b>checkout-api</b><span class="text-slate-400">to production</span><code class="ml-auto text-xs text-slate-500">a91f3c2</code></div>
+      <div class="mt-4 h-2 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-2 w-[62%] rounded-full bg-violet-500"></div></div>
+      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Canary 3 of 5 pods healthy · started 14:02 by ana.k</p>
+    </article>
+    <article class="card border-l-4 border-l-rose-500">
+      <div class="flex items-center gap-3"><span class="pill bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">Failed</span><b>search-indexer</b><span class="text-slate-400">to staging</span><code class="ml-auto text-xs text-slate-500">77be010</code></div>
+      <p class="mt-3 rounded-lg bg-rose-50 px-3 py-2 font-mono text-xs text-rose-800 dark:bg-rose-950/50 dark:text-rose-300">health check /ready returned 503 after 120 s</p>
+      <div class="mt-3 flex items-center gap-3 text-sm"><span class="text-slate-500 dark:text-slate-400">13:47 by tomasz.w</span><button class="ml-auto font-medium text-violet-700 dark:text-violet-400">Retry</button><button class="font-medium text-slate-600 dark:text-slate-300">View log</button></div>
+    </article>
+    <article class="card">
+      <div class="flex items-center gap-3"><span class="pill bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Live</span><b>web-frontend</b><span class="text-slate-400">to production</span><code class="ml-auto text-xs text-slate-500">e03d9aa</code></div>
+      <div class="mt-3 flex text-sm"><span class="text-slate-500 dark:text-slate-400">12:15 by ana.k · took 4 min</span><button class="ml-auto font-medium text-slate-600 dark:text-slate-300">Roll back</button></div>
+    </article>
+    <article class="card">
+      <div class="flex items-center gap-3"><span class="pill bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">Rolled back</span><b>billing-worker</b><span class="text-slate-400">to production</span><code class="ml-auto text-xs text-slate-500">5c2e8f1</code></div>
+      <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Error rate 4.1% &gt; 2% threshold · automatic rollback at 11:03</p>
+    </article>
+  </section>
+</main>
+</body>
+</html>

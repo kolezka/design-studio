@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deployments: timeline v2</title>
+<script>document.documentElement.classList.toggle("dark", new URLSearchParams(location.search).get("theme") === "dark");</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+<style type="text/tailwindcss">
+  @custom-variant dark (&:where(.dark, .dark *));
+  @theme { --font-sans: ui-sans-serif, system-ui, sans-serif; }
+  @utility row { @apply flex items-center gap-3 border-b border-slate-100 px-4 py-3 text-sm last:border-0 dark:border-slate-800; }
+  @utility pill { @apply inline-flex w-24 items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+<header class="flex items-center gap-8 border-b border-slate-200 bg-white px-8 py-4 dark:border-slate-800 dark:bg-slate-900">
+  <span class="text-lg font-semibold">Quayside</span>
+  <nav class="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
+    <a class="font-medium text-violet-700 dark:text-violet-400">Deployments</a><a>Services</a><a>Settings</a>
+  </nav>
+  <button class="ml-auto rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white dark:bg-violet-500">New deployment</button>
+</header>
+<main class="mx-auto max-w-5xl space-y-6 px-8 py-8">
+  <div class="flex items-end justify-between">
+    <div><h1 class="text-2xl font-semibold">Deployments</h1><p class="text-sm text-slate-500 dark:text-slate-400">1 deploying · 1 failed · 1 queued · last 24 hours</p></div>
+    <input class="w-64 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" placeholder="Filter by service or ref">
+  </div>
+  <section>
+    <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">Needs attention</h2>
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div class="row"><span class="pill bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"><span class="size-1.5 animate-pulse rounded-full bg-violet-500"></span>Deploying</span><b class="w-36">checkout-api</b><span class="w-24 text-slate-500 dark:text-slate-400">production</span><div class="h-1.5 w-40 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-1.5 w-[62%] rounded-full bg-violet-500"></div></div><span class="text-slate-500 dark:text-slate-400">canary 3/5</span><code class="ml-auto text-xs text-slate-400">a91f3c2</code><button class="font-medium text-slate-600 dark:text-slate-300">Cancel</button></div>
+      <div class="row bg-rose-50/60 dark:bg-rose-950/30"><span class="pill bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">Failed</span><b class="w-36">search-indexer</b><span class="w-24 text-slate-500 dark:text-slate-400">staging</span><span class="font-mono text-xs text-rose-700 dark:text-rose-300">/ready returned 503 after 120 s</span><code class="ml-auto text-xs text-slate-400">77be010</code><button class="font-medium text-violet-700 dark:text-violet-400">Retry</button></div>
+      <div class="row"><span class="pill bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">Queued</span><b class="w-36">auth-gateway</b><span class="w-24 text-slate-500 dark:text-slate-400">staging</span><span class="text-slate-500 dark:text-slate-400">waiting for search-indexer</span><code class="ml-auto text-xs text-slate-400">b4410de</code><button class="font-medium text-slate-600 dark:text-slate-300">Cancel</button></div>
+    </div>
+  </section>
+  <section>
+    <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">Earlier today</h2>
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div class="row"><span class="pill bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Live</span><b class="w-36">web-frontend</b><span class="w-24 text-slate-500 dark:text-slate-400">production</span><span class="text-slate-500 dark:text-slate-400">12:15 · ana.k · 4 min</span><code class="ml-auto text-xs text-slate-400">e03d9aa</code><button class="font-medium text-slate-600 dark:text-slate-300">Roll back</button></div>
+      <div class="row"><span class="pill bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">Rolled back</span><b class="w-36">billing-worker</b><span class="w-24 text-slate-500 dark:text-slate-400">production</span><span class="text-slate-500 dark:text-slate-400">error rate 4.1% &gt; 2%</span><code class="ml-auto text-xs text-slate-400">5c2e8f1</code><span class="w-16"></span></div>
+      <div class="row"><span class="pill bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Live</span><b class="w-36">checkout-api</b><span class="w-24 text-slate-500 dark:text-slate-400">staging</span><span class="text-slate-500 dark:text-slate-400">09:30 · ana.k · 3 min</span><code class="ml-auto text-xs text-slate-400">9d01b7e</code><span class="w-16"></span></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "title": "Timeline with detail",
+  "direction": "The chosen timeline as a list on the left and the selected deploy's stages and log on the right.",
+  "status": "candidate",
+  "parent": "timeline",
+  "proposed": ["Stage list (build, migrate, canary, rollout) needs the runner to report stages; today it reports one status"]
+}

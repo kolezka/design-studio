@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deployments: current</title>
+<script>document.documentElement.classList.toggle("dark", new URLSearchParams(location.search).get("theme") === "dark");</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+<style type="text/tailwindcss">
+  @custom-variant dark (&:where(.dark, .dark *));
+  @theme { --font-sans: Arial, Helvetica, sans-serif; }
+</style>
+</head>
+<body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 text-sm">
+<div class="bg-gray-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 px-4 py-2 flex items-center gap-4">
+  <b>Quayside</b>
+  <a class="text-blue-700 dark:text-blue-400 underline">Deployments</a>
+  <a class="text-blue-700 dark:text-blue-400 underline">Services</a>
+  <a class="text-blue-700 dark:text-blue-400 underline">Settings</a>
+</div>
+<div class="p-4 space-y-4">
+  <fieldset class="border border-gray-300 dark:border-gray-700 p-3">
+    <legend class="px-1 font-bold">New deployment</legend>
+    <div class="flex gap-2 items-center">
+      Service <select class="border border-gray-400 dark:border-gray-600 dark:bg-gray-800 px-1"><option>checkout-api</option></select>
+      Ref <input class="border border-gray-400 dark:border-gray-600 dark:bg-gray-800 px-1 w-40" value="main">
+      Environment <select class="border border-gray-400 dark:border-gray-600 dark:bg-gray-800 px-1"><option>staging</option></select>
+      <button class="border border-gray-500 bg-gray-100 dark:bg-gray-700 px-2">Deploy</button>
+    </div>
+  </fieldset>
+  <fieldset class="border border-gray-300 dark:border-gray-700 p-3">
+    <legend class="px-1 font-bold">Deployments (last 24 hours)</legend>
+    <table class="w-full border-collapse">
+      <thead><tr class="bg-gray-100 dark:bg-gray-800 text-left">
+        <th class="border border-gray-300 dark:border-gray-700 px-2 py-1">ID</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">Service</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">Ref</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">Env</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">Status</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">Started</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">By</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1">Message</th><th class="border border-gray-300 dark:border-gray-700 px-2 py-1"></th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">4182</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">checkout-api</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 font-mono">a91f3c2</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">production</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">RUNNING (62%)</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">11/11/2026 14:02</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">ana.k</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">canary 3/5 pods</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1"><button class="underline text-blue-700 dark:text-blue-400">Cancel</button></td></tr>
+        <tr><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">4181</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">search-indexer</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 font-mono">77be010</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">staging</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 text-red-700 dark:text-red-400">FAILED</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">11/11/2026 13:47</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">tomasz.w</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">health check /ready returned 503 after 120 s</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1"><button class="underline text-blue-700 dark:text-blue-400">Retry</button></td></tr>
+        <tr><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">4180</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">web-frontend</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 font-mono">e03d9aa</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">production</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">LIVE</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">11/11/2026 12:15</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">ana.k</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">-</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1"><button class="underline text-blue-700 dark:text-blue-400">Roll back</button></td></tr>
+        <tr><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">4179</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">billing-worker</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 font-mono">5c2e8f1</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">production</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">ROLLED_BACK</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">11/11/2026 10:58</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">jules.m</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">error rate 4.1% &gt; 2% threshold</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1"></td></tr>
+        <tr><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">4178</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">auth-gateway</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 font-mono">b4410de</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">staging</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">QUEUED</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">-</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">deploy-bot</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">waiting for 4181</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1"><button class="underline text-blue-700 dark:text-blue-400">Cancel</button></td></tr>
+        <tr><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">4177</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">checkout-api</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1 font-mono">9d01b7e</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">staging</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">LIVE</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">11/11/2026 09:30</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">ana.k</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1">-</td><td class="border border-gray-300 dark:border-gray-700 px-2 py-1"></td></tr>
+      </tbody>
+    </table>
+  </fieldset>
+</div>
+</body>
+</html>
