@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "design-studio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Design and redesign UI as HTML drafts written by the current model, compared on a local canvas. No external design service.",
   "license": "SEE LICENSE IN LICENSE",
   "keywords": ["design", "ui", "mockups", "redesign", "variants", "canvas"],

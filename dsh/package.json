@@ -16,7 +16,7 @@
     "bun.lock"
   ],
   "dependencies": {
-    "claude-plugin-dsh": "0.1.0"
+    "claude-plugin-dsh": "latest"
   },
   "dsh": {
     "bundle": {
