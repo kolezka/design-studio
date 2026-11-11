@@ -767,6 +767,19 @@
       }
     }
   };
+  canvas.addEventListener("wheel", (e) => {
+    if (e.target.closest(".inspector, .controls") || !e.deltaY) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left - canvas.clientLeft;
+    const y = e.clientY - rect.top - canvas.clientTop;
+    const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? rect.height : 1);
+    const next = Math.min(2, Math.max(Math.min(.15, zoom), zoom * Math.exp(-delta * .002)));
+    panX = x - (x - panX) * next / zoom;
+    panY = y - (y - panY) * next / zoom;
+    zoom = next;
+    transform();
+  }, { passive: false });
   canvas.addEventListener("pointerdown", (e) => {
     if (
       e.target !== canvas && e.target !== world && e.target !== nodes &&
