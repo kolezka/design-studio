@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Proposal graph</title>
+    <style>
+      /* CANVAS_STYLES */
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="mark">d</div><strong>design studio</strong><span
+        class="project"
+        id="project"
+      ></span><div class="head-actions">
+        <nav class="seg" aria-label="Theme">
+          <a id="light">Light</a><a id="dark">Dark</a>
+        </nav>
+        <nav class="seg" aria-label="Preview size">
+          <a id="desktop">Desktop</a><a id="tablet">Tablet</a><a id="phone"
+          >Phone</a>
+        </nav>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="eyebrow">Project</div>
+        <h2 id="sideProject"></h2>
+        <p>Explore the evolution of your ideas.</p>
+        <div class="nav">◈ &nbsp; Proposal graph <span id="count"></span></div>
+      </aside>
+      <main>
+        <div class="topline">
+          <div>
+            <div class="eyebrow">Design exploration</div>
+            <h1>Proposal graph</h1>
+            <p>Follow the thinking, from first draft to next idea.</p>
+          </div>
+          <button id="fitTop">Fit canvas</button>
+        </div>
+        <section
+          class="canvas"
+          id="canvas"
+          aria-label="Proposal lineage canvas"
+        >
+          <div class="world" id="world">
+            <svg class="edges" id="edges" aria-hidden="true"></svg>
+            <div id="nodes"></div>
+          </div>
+          <div class="hint">
+            Drag background to pan · select an element to describe a change
+          </div>
+          <div class="controls" aria-label="Canvas controls">
+            <button id="out" aria-label="Zoom out">−</button><span id="scale"
+            >100%</span><button id="in" aria-label="Zoom in">+</button>
+            <button id="fit" aria-label="Fit graph">⌗</button>
+            <button id="left" aria-label="Pan left">←</button>
+            <button id="right" aria-label="Pan right">→</button>
+            <button id="up" aria-label="Pan up">↑</button>
+            <button id="down" aria-label="Pan down">↓</button>
+          </div>
+          <div id="empty" class="empty" hidden>
+            No drafts yet. Add drafts under
+            drafts/&lt;target&gt;/&lt;draft&gt;/v1.html.
+          </div>
+          <div class="status" id="status" role="status" aria-live="polite">
+          </div>
+          <aside
+            class="inspector"
+            id="inspector"
+            hidden
+            aria-labelledby="inspectorTitle"
+          >
+            <button
+              class="close"
+              id="closeInspector"
+              aria-label="Close request editor"
+            >
+              ×
+            </button>
+            <div class="eyebrow">Contextual request</div>
+            <h2 id="inspectorTitle">Describe a change</h2>
+            <p class="muted">
+              Click or right-click an element in the preview, then copy your
+              request into the existing chat. Use Interact with preview to use
+              its controls. Nested frames and closed shadow roots cannot be
+              inspected. Nothing is created or saved here.
+            </p>
+            <div class="selection" id="selection">
+              No element selected yet.
+            </div><label for="description"
+            >What would you change?</label><textarea
+              id="description"
+              maxlength="4000"
+              placeholder="Describe the change you want"
+            ></textarea><label for="request">Request to copy</label><textarea
+              id="request"
+              readonly
+            ></textarea><button id="copy">Copy request</button>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <dialog id="dialog" aria-labelledby="dialogTitle">
+      <div class="dialog-head">
+        <strong id="dialogTitle">Full preview</strong><button
+          id="dialogSelect"
+          aria-pressed="true"
+        >
+          Interact with preview
+        </button>
+        <button id="dialogClose" aria-label="Close full preview">×</button>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-viewport">
+          <iframe
+            id="dialogFrame"
+            class="dialog-frame"
+            sandbox="allow-scripts"
+            title="Full draft preview"
+          ></iframe>
+        </div>
+      </div>
+    </dialog>
+    <script>
+      const initial = CANVAS_PAYLOAD;
+      /* CANVAS_SCRIPT */
+    </script>
+  </body>
+</html>
