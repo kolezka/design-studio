@@ -1,0 +1,26 @@
+{
+  "name": "@kolezka/design-studio-dsh",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "DeepSeek Harness adapter for the design-studio Claude Code plugin",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "bun.lock"
+  ],
+  "dependencies": {
+    "claude-plugin-dsh": "0.1.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

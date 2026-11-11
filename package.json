@@ -1,0 +1,9 @@
+{
+  "name": "design-studio",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "test": "bun test"
+  }
+}
