@@ -2,6 +2,7 @@
   "name": "@kolezka/design-studio-dsh",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "description": "DeepSeek Harness adapter for the design-studio Claude Code plugin",
   "type": "module",
   "exports": {

@@ -134,4 +134,4 @@ The tests cover the canvas: ordering, the latest version, the style line, a malf
 
 ## License
 
-[MIT](LICENSE)
+Copyright (c) 2026 Mariusz Rakus. All rights reserved. See [LICENSE](LICENSE).
