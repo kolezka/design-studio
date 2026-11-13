@@ -5,7 +5,7 @@
     "": {
       "name": "@kolezka/design-studio-dsh",
       "dependencies": {
-        "claude-plugin-dsh": "latest",
+        "claude-plugin-dsh": "0.2.0",
       },
     },
   },

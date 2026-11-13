@@ -1,6 +1,6 @@
 {
   "name": "@kolezka/design-studio-dsh",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "license": "SEE LICENSE IN ../LICENSE",
   "description": "DeepSeek Harness adapter for the design-studio Claude Code plugin",
@@ -16,7 +16,7 @@
     "bun.lock"
   ],
   "dependencies": {
-    "claude-plugin-dsh": "latest"
+    "claude-plugin-dsh": "0.2.0"
   },
   "dsh": {
     "bundle": {
