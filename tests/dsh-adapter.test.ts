@@ -15,7 +15,7 @@ test("the standalone DSH adapter resolves the published runtime and registers th
     cpSync(join(root, ".claude-plugin"), join(fixture, ".claude-plugin"), { recursive: true });
     const dsh = join(fixture, "dsh");
     const pkg = JSON.parse(readFileSync(join(dsh, "package.json"), "utf8"));
-    expect(pkg.dependencies["claude-plugin-dsh"]).toBe("0.1.0");
+    expect(pkg.dependencies["claude-plugin-dsh"]).toBe("0.2.0");
     expect(readFileSync(join(dsh, "index.js"), "utf8")).toContain("from 'claude-plugin-dsh'");
     expect(existsSync(join(dsh, "claude-compat.js"))).toBe(false);
     expect(pkg.files).not.toContain("claude-compat.js");
