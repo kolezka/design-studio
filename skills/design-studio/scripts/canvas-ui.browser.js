@@ -244,6 +244,7 @@
   function navigate(frame, d, v) {
     const nonce = crypto.randomUUID();
     frame.dataset.nonce = nonce;
+    delete frame.dataset.ready;
     frame.src = src(d, v) + "&ds_nonce=" + encodeURIComponent(nonce);
   }
   function node(tag, cls, content) {
@@ -709,6 +710,14 @@
     if (!frame || !d) return;
     const msg = event.data;
     if (
+      msg && msg.type === "design-studio:ready" &&
+      msg.nonce === frame.dataset.nonce
+    ) {
+      frame.dataset.ready = msg.nonce;
+      if (frame === activeFrame) setSelect(frame, true);
+      return;
+    }
+    if (
       !msg || typeof msg !== "object" || Array.isArray(msg) ||
       msg.type !== "design-studio:selection" ||
       msg.nonce !== frame.dataset.nonce || typeof msg.selector !== "string" ||
@@ -724,6 +733,19 @@
     selection = { selector: msg.selector, text: msg.text };
     updateSelection();
   });
+  // A press on a freshly loaded sandboxed frame can land on the iframe element
+  // in this page instead of inside the draft, and no click follows. Forward it.
+  document.addEventListener("pointerdown", (e) => {
+    const frame = activeFrame;
+    if (!frame || e.target !== frame || !frame.contentWindow) return;
+    const r = frame.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    frame.contentWindow.postMessage({
+      type: "design-studio:select-at",
+      x: (e.clientX - r.left) * frame.offsetWidth / r.width,
+      y: (e.clientY - r.top) * frame.offsetHeight / r.height,
+    }, "*");
+  }, true);
   el("description").addEventListener("input", updateSelection);
   el("copy").onclick = async () => {
     try {
@@ -745,6 +767,8 @@
   };
   el("dialogClose").onclick = () => dialog.close();
   dialog.addEventListener("close", () => {
+    // The close event is queued; a quick reopen must not be torn down by it.
+    if (dialog.open) return;
     if (activeFrame === full) stopSelection();
     canvas.append(inspector);
     dialogKey = null;

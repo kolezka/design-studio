@@ -60,7 +60,7 @@ test.skipIf(!browser || !chrome)("live version updates preserve the selected pre
   await run("open", output.match(/http:\/\/127\.0\.0\.1:\d+\//)![0]);
   await until("document.querySelector('#status').textContent.includes('connected')");
   await evalJs(`(Array.from(document.querySelector('article .node-footer').querySelectorAll('button')).find(b => b.textContent === 'Full preview').click(), true)`);
-  await until("document.querySelector('#dialog').open && document.querySelector('#dialogFrame').src.includes('ds_nonce')");
+  await until("document.querySelector('#dialog').open && document.querySelector('#dialogFrame').dataset.ready === document.querySelector('#dialogFrame').dataset.nonce");
   await run("wait", "--load", "networkidle");
   const point = await evalJs("(() => { const r = document.querySelector('#dialogFrame').getBoundingClientRect(); return [r.left + 30, r.top + 30]; })()");
   await run("mouse", "move", String(point[0]), String(point[1]));

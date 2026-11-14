@@ -22,7 +22,7 @@ test.skipIf(!chrome || !browser)("full preview selects dynamic and shadow elemen
   await run("set", "viewport", "1600", "1000");
   await run("open", `http://127.0.0.1:${server.port}/?static=1`);
   await run("find", "text", "Full preview", "click");
-  await run("wait", "--fn", "document.querySelector('#dialog').open && document.querySelector('#dialogFrame').src.includes('ds_nonce')");
+  await run("wait", "--fn", "document.querySelector('#dialog').open && document.querySelector('#dialogFrame').dataset.ready === document.querySelector('#dialogFrame').dataset.nonce");
   const point = async (y: number) => {
     const rect = await evaluate(`(() => { const r=document.querySelector('#dialogFrame').getBoundingClientRect(); return {x:r.left+40,y:r.top+${y}}; })()`);
     await run("mouse", "move", String(rect.x), String(rect.y));

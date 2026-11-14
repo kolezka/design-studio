@@ -108,6 +108,7 @@ test.skipIf(!CHROME || !BROWSER)("a large graph initially keeps previews readabl
 test.skipIf(!CHROME || !BROWSER)("selecting a preview element adds its context to the request", async () => {
   await start();
   await evaluate(`(document.querySelector('article[data-node="home/variant/v2"]').querySelectorAll('button')[0].click(), true)`);
+  await browser("wait", "--fn", `(() => { const f = document.querySelector('article[data-node="home/variant/v2"] iframe'); return f.dataset.ready && f.dataset.ready === f.dataset.nonce; })()`);
   const point = await evaluate(`(() => { const r = document.querySelector('article[data-node="home/variant/v2"] iframe').getBoundingClientRect(); return { x: Math.round(r.left + 12), y: Math.round(r.top + 12) }; })()`);
   await browser("mouse", "move", String(point.x), String(point.y));
   await browser("mouse", "down");
