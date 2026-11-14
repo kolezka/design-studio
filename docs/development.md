@@ -8,6 +8,18 @@ bun test
 
 The tests cover the canvas: ordering, the latest version, the style line, a malformed `meta.json` shown as an error, only draft files served, a foreign `Host` refused, and the theme and size switches. When Chrome and `agent-browser` are installed, browser tests also check that previews really render.
 
+## Bumping the version
+
+The version lives in `.claude-plugin/plugin.json` and `dsh/package.json`, and both must match. Claude Code only offers an update when it changes.
+
+On GitHub, run the **Bump version** workflow from `main` (Actions, Bump version, Run workflow) and pick `patch`, `minor` or `major`. It bumps both files and pushes the commit to `main`.
+
+The same bump from a clone, without the commit:
+
+```bash
+bun scripts/bump-version.ts patch
+```
+
 ## Canvas sources
 
 The Bun entry point is `skills/design-studio/scripts/canvas.ts`. The page shell, styles and browser behavior live beside it in `canvas-ui.html`, `canvas-ui.css` and `canvas-ui.browser.js`. `canvas-ui.ts` combines them with the escaped initial data when serving the page. These files ship with the skill, so users do not need a build step. The preview selection bridge is in `canvas-bridge.ts`.
