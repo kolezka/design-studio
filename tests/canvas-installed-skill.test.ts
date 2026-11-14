@@ -27,15 +27,17 @@ async function fixture() {
     if (result.exitCode !== 0) throw new Error(`Claude plugin ${args[0]} failed: ${result.stderr.toString()} ${result.stdout.toString()}`);
   }
   const registry = JSON.parse(readFileSync(join(config, "plugins", "installed_plugins.json"), "utf8"));
-  const installed = join(registry.plugins["design-studio@design-studio-local"][0].installPath, "skills", "design-studio");
-  for (const asset of ["canvas-ui.html", "canvas-ui.css", "canvas-ui.browser.js"]) {
-    expect(readFileSync(join(installed, "scripts", asset), "utf8").length).toBeGreaterThan(0);
+  const installed = registry.plugins["design-studio@design-studio-local"][0].installPath;
+  for (const source of ["bin/design-studio", "src/canvas/page.html", "src/canvas/page.css", "src/canvas/main.ts", "src/bridge/main.ts"]) {
+    expect(readFileSync(join(installed, source), "utf8").length).toBeGreaterThan(0);
   }
+  expect(existsSync(join(installed, "skills", "design-studio", "SKILL.md"))).toBe(true);
+  expect(existsSync(join(installed, "skills", "design-studio", "scripts"))).toBe(false);
   const draft = join(project, ".design", "drafts", "home", "sample");
   mkdirSync(draft, { recursive: true });
   writeFileSync(join(draft, "meta.json"), JSON.stringify({ title: "Installed skill draft" }));
   writeFileSync(join(draft, "v1.html"), "<!doctype html><h1>Installed preview content</h1>");
-  const process = Bun.spawn([processExecPath(), join(installed, "scripts", "canvas.ts"), "--port", "0"], { cwd: project, stdout: "pipe", stderr: "pipe", env: { ...globalThis.process.env, NODE_PATH: "" } });
+  const process = Bun.spawn([processExecPath(), join(installed, "bin", "design-studio"), "canvas", "--port", "0"], { cwd: project, stdout: "pipe", stderr: "pipe", env: { ...globalThis.process.env, NODE_PATH: "" } });
   processes.push(process);
   const reader = process.stdout.getReader();
   let output = "";
@@ -67,7 +69,7 @@ test.skipIf(!claude)("marketplace-installed skill serves its bootstrap from an u
   const preview = await fetch(new URL("d/home/sample/v1.html", url));
   expect(preview.status).toBe(200);
   expect(await preview.text()).toContain("Installed preview content");
-  const script = `const { graphPage } = await import(${JSON.stringify(join(installed, "scripts", "canvas-ui.ts"))}); const html = graphPage('Standalone project', '/tmp/design', 'light', 1440, 900, []); if (!html.includes('Proposal graph') || !html.includes('Standalone project')) process.exit(1);`;
+  const script = `const { renderCanvasPage } = await import(${JSON.stringify(join(installed, "src", "server", "page.ts"))}); const html = renderCanvasPage({ projectName: 'Standalone project', root: '/tmp/design', theme: 'light', width: 1440, height: 900, targets: [] }); if (!html.includes('Proposal graph') || !html.includes('Standalone project')) process.exit(1);`;
   const direct = Bun.spawn([processExecPath(), "-e", script], { cwd: project, stdout: "pipe", stderr: "pipe", env: { ...process.env, NODE_PATH: "" } });
   const [code, error] = await Promise.all([direct.exited, new Response(direct.stderr).text()]);
   expect({ code, error }).toEqual({ code: 0, error: "" });

@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CANVAS = join(import.meta.dir, "..", "skills", "design-studio", "scripts", "canvas.ts");
+const CANVAS = join(import.meta.dir, "..", "bin", "design-studio");
 const procs: ReturnType<typeof Bun.spawn>[] = [];
 afterEach(() => {
   for (const p of procs.splice(0)) p.kill();
@@ -17,7 +17,7 @@ function draft(root: string, target: string, id: string, meta: string | null, ve
 }
 
 async function start(root: string) {
-  const p = Bun.spawn(["bun", CANVAS, "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  const p = Bun.spawn(["bun", CANVAS, "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   procs.push(p);
   const reader = p.stdout.getReader();
   let text = "";

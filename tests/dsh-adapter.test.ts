@@ -11,7 +11,7 @@ test("the standalone DSH adapter resolves the published runtime and registers th
   const fixture = mkdtempSync(join(realpathSync(tmpdir()), "design-studio-dsh-"));
   try {
     cpSync(join(root, "dsh"), join(fixture, "dsh"), { recursive: true, filter: (path) => !path.includes("node_modules") });
-    cpSync(join(root, "skills"), join(fixture, "skills"), { recursive: true });
+    for (const folder of ["skills", "bin", "src"]) cpSync(join(root, folder), join(fixture, folder), { recursive: true });
     cpSync(join(root, ".claude-plugin"), join(fixture, ".claude-plugin"), { recursive: true });
     const dsh = join(fixture, "dsh");
     const pkg = JSON.parse(readFileSync(join(dsh, "package.json"), "utf8"));
@@ -53,7 +53,12 @@ test("the standalone DSH adapter resolves the published runtime and registers th
     expect(output.skills[0].description).toStartWith("Use when the user asks to design, redesign, restyle or mock up");
     expect(output.skills[0].resourceBase).toEqual({ kind: "directory", path: join(fixture, "skills", "design-studio") });
     expect(output.body.content).toContain("# Design studio");
-    expect(output.body.content).toContain("bun <skill-dir>/scripts/shot.ts");
+    // The skill names the CLI by plugin root, and the runtime fills that root in.
+    const cli = join(fixture, "bin", "design-studio");
+    expect(output.body.content).toContain(`bun ${cli} shot`);
+    expect(output.body.content).not.toContain("CLAUDE_PLUGIN_ROOT");
+    const usage = spawnSync("bun", [cli, "--help"], { cwd: fixture, encoding: "utf8" });
+    expect({ status: usage.status, usage: usage.stdout.split("\n")[0] }).toEqual({ status: 0, usage: "usage: design-studio <command> [options]" });
     expect(output.warnings).toEqual([]);
     expect(output.commands).toEqual([]);
     expect(output.sections).toEqual([]);

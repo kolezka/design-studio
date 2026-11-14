@@ -1,9 +1,14 @@
 {
   "name": "design-studio",
   "private": true,
-  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "test:unit": "bun test tests/unit",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
   }
 }

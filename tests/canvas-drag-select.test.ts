@@ -1,7 +1,7 @@
 import { afterAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { graphPage } from "../skills/design-studio/scripts/canvas-ui";
-import { instrumentDraft } from "../skills/design-studio/scripts/canvas-bridge";
+import { renderCanvasPage } from "../src/server/page";
+import { instrumentDraft } from "../src/server/instrument-draft";
 
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium", Bun.which("google-chrome"), Bun.which("chromium")].find((path): path is string => !!path && existsSync(path));
 const browser = Bun.which("agent-browser");
@@ -9,7 +9,7 @@ const session = `canvas-drag-select-${process.pid}`;
 const targets = [{ target: "home", drafts: [{ target: "home", id: "first", meta: { title: "First" }, metaError: null, versions: [1] }] }];
 const button = (top: number, label: string) => `<button style="position:absolute;top:${top}px;left:20px;width:120px;height:30px">${label}</button>`;
 const draft = instrumentDraft(`<!doctype html><html><body style="margin:0">${button(20, "Alpha")}${button(70, "Beta")}${button(200, "Gamma")}</body></html>`);
-const server = Bun.serve({ port: 0, fetch(req) { return new Response(new URL(req.url).pathname === "/" ? graphPage("Test", "/tmp", "light", 390, 844, targets) : draft, { headers: { "Content-Type": "text/html" } }); } });
+const server = Bun.serve({ port: 0, fetch(req) { return new Response(new URL(req.url).pathname === "/" ? renderCanvasPage({ projectName: "Test", root: "/tmp", theme: "light", width: 390, height: 844, targets }) : draft, { headers: { "Content-Type": "text/html" } }); } });
 afterAll(() => { if (browser) Bun.spawnSync([browser, "--session", session, "close"], { stdout: "ignore", stderr: "ignore" }); server.stop(true); });
 async function run(...args: string[]) {
   const proc = Bun.spawn([browser!, "--session", session, ...args], { stdout: "pipe", stderr: "pipe" });

@@ -32,7 +32,7 @@ async function start(reduced = false) {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "v1.html"), "<!doctype html><h1>Selected preview</h1>");
   writeFileSync(join(dir, "v2.html"), "<!doctype html><h1>Another version</h1>");
-  server = Bun.spawn(["bun", join(import.meta.dir, "..", "skills/design-studio/scripts/canvas.ts"), "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  server = Bun.spawn(["bun", join(import.meta.dir, "..", "bin", "design-studio"), "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const reader = server.stdout.getReader(); let output = "";
   while (!/http:\/\/127\.0\.0\.1:\d+\//.test(output)) {
     const next = await reader.read();

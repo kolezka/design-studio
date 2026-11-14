@@ -9,7 +9,7 @@
   drafts/<target>/<draft>/
     meta.json
     v1.html, v2.html, ...    every version kept; the highest number is current
-  shots/<target>/<draft>/    PNGs from shot.ts
+  shots/<target>/<draft>/    PNGs from `design-studio shot`
 ```
 
 `<target>` is a screen or feature (`workspace`, `settings`, `checkout`). `<draft>` is a short slug (`current`, `sidebar-console`, `two-column`). Letters, digits, `.`, `_`, `-` only.
@@ -77,7 +77,7 @@ One self-contained file per version, openable from disk:
 ```
 
 - Tailwind loads from jsDelivr, so rendering needs network access. Offline, write plain CSS in a `<style>` block instead.
-- `?theme=dark` and `?theme=light` must both work; `shot.ts` and the canvas use them. Every colour class has its `dark:` pair.
+- `?theme=dark` and `?theme=light` must both work; `design-studio shot` and the canvas use them. Every colour class has its `dark:` pair.
 - Content comes from `context.md`: real labels, real field names, realistic values. No lorem ipsum, no invented brand.
 - Escape `<`, `>` and `&` in sample text and code (`&lt;`), or the browser swallows them as tags.
 - Reusable classes are defined with `@utility name { ... }` inside the `text/tailwindcss` block. `@apply` accepts only Tailwind utilities, not a class defined next to it.

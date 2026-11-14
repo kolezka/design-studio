@@ -1,14 +1,14 @@
 import { afterAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { graphPage } from "../skills/design-studio/scripts/canvas-ui";
-import { instrumentDraft } from "../skills/design-studio/scripts/canvas-bridge";
+import { renderCanvasPage } from "../src/server/page";
+import { instrumentDraft } from "../src/server/instrument-draft";
 
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", Bun.which("google-chrome"), Bun.which("chromium")].find((p): p is string => !!p && existsSync(p));
 const browser = Bun.which("agent-browser");
 const session = `canvas-selection-${process.pid}`;
 const targets = [{ target: "home", drafts: [{ target: "home", id: "first", meta: { title: "first" }, metaError: null, versions: [1] }] }];
 const draft = instrumentDraft(`<!doctype html><html><body><button id="action" style="position:absolute;top:20px;left:20px" onclick="this.textContent='Activated'">Original</button><div id="dynamic" style="position:absolute;top:80px;left:20px"></div><div id="host" style="position:absolute;top:140px;left:20px"></div><script>document.querySelector('#dynamic').innerHTML='<span>Dynamic content</span>';document.querySelector('#host').attachShadow({mode:'open'}).innerHTML='<button>Shadow content</button>';</script></body></html>`);
-const server = Bun.serve({ port: 0, fetch(req) { return new Response(new URL(req.url).pathname === "/" ? graphPage("Test", "/tmp", "light", 390, 844, targets) : draft, { headers: { "Content-Type": "text/html" } }); } });
+const server = Bun.serve({ port: 0, fetch(req) { return new Response(new URL(req.url).pathname === "/" ? renderCanvasPage({ projectName: "Test", root: "/tmp", theme: "light", width: 390, height: 844, targets }) : draft, { headers: { "Content-Type": "text/html" } }); } });
 afterAll(() => { if (browser) Bun.spawnSync([browser, "--session", session, "close"], { stdout: "ignore", stderr: "ignore" }); server.stop(); });
 async function run(...args: string[]) {
   const proc = Bun.spawn([browser!, "--session", session, ...args], { stdout: "pipe", stderr: "pipe" });

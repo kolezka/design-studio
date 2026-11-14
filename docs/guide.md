@@ -43,19 +43,19 @@ The canvas is read only and listens on `127.0.0.1` only. Draft previews run in a
 
 The full format is in [the draft contract](../skills/design-studio/references/draft-contract.md).
 
-## Scripts
+## Commands
 
-Claude runs these for you. To run them yourself, use a clone of this repository. Both need only Bun.
+Claude runs these for you. To run them yourself, use a clone of this repository. They need only Bun.
 
 | Command | What it does |
 | --- | --- |
-| `bun skills/design-studio/scripts/canvas.ts [--dir .design] [--port 4870] [--open]` | Serves the canvas, prints its URL and the command that stops it |
-| `bun skills/design-studio/scripts/shot.ts <draft.html> [--theme dark] [--width 390] [--height 1800]` | Renders one draft to a PNG |
-| `bun skills/design-studio/scripts/shot.ts --all .design [--theme light,dark] [--width 1440] [--height 900]` | Renders the latest version of every draft and writes `shots/sheet-<theme>-<width>x<height>.png` |
+| `bin/design-studio canvas [--dir .design] [--port 4870] [--open]` | Serves the canvas, prints its URL and the command that stops it |
+| `bin/design-studio shot <draft.html> [--theme dark] [--width 390] [--height 1800]` | Renders one draft to a PNG |
+| `bin/design-studio shot --all .design [--theme light,dark] [--width 1440] [--height 900]` | Renders the latest version of every draft and writes `shots/sheet-<theme>-<width>x<height>.png` |
 
 Set `CHROME_PATH` if your browser is not found.
 
-`shot.ts` exit codes:
+`shot` exit codes:
 
 | Code | Meaning |
 | --- | --- |

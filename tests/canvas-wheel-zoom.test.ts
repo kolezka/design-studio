@@ -1,11 +1,11 @@
 import { afterAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { graphPage } from "../skills/design-studio/scripts/canvas-ui";
+import { renderCanvasPage } from "../src/server/page";
 
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", Bun.which("google-chrome"), Bun.which("chromium")].find((path): path is string => !!path && existsSync(path));
 const browser = Bun.which("agent-browser");
 const session = `canvas-wheel-zoom-${process.pid}`;
-const server = Bun.serve({ port: 0, fetch() { return new Response(graphPage("Test", "/tmp", "light", 390, 844, []), { headers: { "Content-Type": "text/html" } }); } });
+const server = Bun.serve({ port: 0, fetch() { return new Response(renderCanvasPage({ projectName: "Test", root: "/tmp", theme: "light", width: 390, height: 844, targets: [] }), { headers: { "Content-Type": "text/html" } }); } });
 afterAll(() => { if (browser) Bun.spawnSync([browser, "--session", session, "close"], { stdout: "ignore", stderr: "ignore" }); server.stop(); });
 async function run(...args: string[]) {
   const proc = Bun.spawn([browser!, "--session", session, ...args], { stdout: "pipe", stderr: "pipe" });

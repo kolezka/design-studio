@@ -1,7 +1,7 @@
 import { afterAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { graphPage } from "../skills/design-studio/scripts/canvas-ui";
-import { instrumentDraft } from "../skills/design-studio/scripts/canvas-bridge";
+import { renderCanvasPage } from "../src/server/page";
+import { instrumentDraft } from "../src/server/instrument-draft";
 
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium", Bun.which("google-chrome"), Bun.which("chromium")].find((path): path is string => !!path && existsSync(path));
 const browser = Bun.which("agent-browser");
@@ -15,7 +15,7 @@ const server = Bun.serve({
   async fetch(req) {
     const path = new URL(req.url).pathname;
     if (path === "/slow.png") { await Bun.sleep(15000); return new Response("", { headers: { "Content-Type": "image/png" } }); }
-    return new Response(path === "/" ? graphPage("Test", "/tmp", "light", 390, 844, targets) : draft, { headers: { "Content-Type": "text/html" } });
+    return new Response(path === "/" ? renderCanvasPage({ projectName: "Test", root: "/tmp", theme: "light", width: 390, height: 844, targets }) : draft, { headers: { "Content-Type": "text/html" } });
   },
 });
 afterAll(() => { if (browser) Bun.spawnSync([browser, "--session", session, "close"], { stdout: "ignore", stderr: "ignore" }); server.stop(true); });

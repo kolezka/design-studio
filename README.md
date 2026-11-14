@@ -61,10 +61,10 @@ For a quick overview, Claude can also lay all drafts out on one image:
 
 ## More
 
-- [User guide](docs/guide.md): the canvas in detail, the `.design/` folder, the render and canvas scripts, updating and removing the plugin
+- [User guide](docs/guide.md): the canvas in detail, the `.design/` folder, the `canvas` and `shot` commands, updating and removing the plugin
 - [DeepSeek Harness](docs/deepseek-harness.md): using design-studio outside Claude Code
 - [How it was tested](docs/testing.md): what went wrong without the skill, and what it fixes
-- [Development](docs/development.md): tests and refreshing the screenshots
+- [Development](docs/development.md): source layout, tests and refreshing the screenshots
 
 The screenshots show [Quayside](docs/demo/quayside), a fictional demo project. Not affiliated with Superdesign.
 
