@@ -26,6 +26,6 @@ export function showHeader({ projectName, root, theme, width, height }: CanvasBo
 
 function link(id: string, theme: Theme, size: PreviewSize, isCurrent: boolean): void {
   const anchor = byId<HTMLAnchorElement>(id);
-  anchor.href = `/?theme=${theme}&w=${size.width}&h=${size.height}`;
+  anchor.href = `?theme=${theme}&w=${size.width}&h=${size.height}`;
   if (isCurrent) anchor.setAttribute("aria-current", "page");
 }
