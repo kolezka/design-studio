@@ -306,10 +306,15 @@
     const d = data.find((x) => key(x) === selected);
     el("selection").textContent = selection
       ? selection.selector + (selection.text ? " · " + selection.text : "")
-      : "No element selected yet. Click an element, or focus the preview and use arrow keys.";
+      : "No element selected yet. Click an element, drag a box around several, or focus the preview and use arrow keys.";
+    const many = selection && selection.items && selection.items.length > 1;
     el("request").value = d
       ? "Please update design draft " + d.target + "/" + d.id + " (v" +
-        d.version + ").\n" + (selection
+        d.version + ").\n" + (many
+          ? "Selected elements:\n" + selection.items.map((i) =>
+            "- " + i.selector + (i.text ? " (" + i.text + ")" : "")
+          ).join("\n") + "\n"
+          : selection
           ? "Selected element: " + selection.selector + "\nSelected text: " +
             selection.text + "\n"
           : "") +
@@ -730,7 +735,13 @@
       highlight();
     } else if (frame !== activeFrame || selected !== key(d)) return;
     inspector.hidden = false;
-    selection = { selector: msg.selector, text: msg.text };
+    const items = Array.isArray(msg.items) && msg.items.length <= 20
+      ? msg.items.filter((i) =>
+        i && typeof i.selector === "string" && typeof i.text === "string" &&
+        i.selector && i.selector.length <= 1000 && i.text.length <= 500
+      ).map((i) => ({ selector: i.selector, text: i.text }))
+      : [];
+    selection = { selector: msg.selector, text: msg.text, items };
     updateSelection();
   });
   // A press on a freshly loaded sandboxed frame can land on the iframe element
