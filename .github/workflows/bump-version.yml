@@ -1,0 +1,65 @@
+name: Bump version
+
+# Raises the plugin version in .claude-plugin/plugin.json and dsh/package.json and pushes
+# the commit to main. Claude Code only offers an update when the version changes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version part to bump
+        type: choice
+        required: true
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-version
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require the main branch
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run this workflow from main, not from $GITHUB_REF_NAME."
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Test the bump script
+        run: bun test tests/bump-version.test.ts
+
+      - name: Bump version
+        id: bump
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          version="$(bun scripts/bump-version.ts "$BUMP")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .claude-plugin/plugin.json dsh/package.json
+          git commit -m "chore: bump version to $VERSION"
+          git push origin HEAD:refs/heads/main
+          echo "Bumped the plugin and the DSH adapter to $VERSION." >> "$GITHUB_STEP_SUMMARY"
