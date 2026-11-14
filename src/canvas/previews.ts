@@ -13,6 +13,7 @@ export class Previews {
   create(): HTMLIFrameElement {
     const frame = document.createElement("iframe");
     frame.setAttribute("sandbox", "allow-scripts");
+    frame.loading = "lazy";
     return frame;
   }
 

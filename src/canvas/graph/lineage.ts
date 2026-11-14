@@ -3,7 +3,8 @@
 // A version names its parent in `meta.versions.v<N>.parent`. An entry without a parent
 // marks a root on purpose. Drafts written before that field existed fall back to the
 // previous version of the same draft, then to the draft-level `meta.parent`.
-import { isDraftName, isRecord } from "../../shared/drafts";
+import { isDraftName } from "../../shared/drafts";
+import { isRecord } from "../../shared/guards";
 import { type Draft, isVersionNumber, type ParentLink, type VersionNode, versionKey } from "./types";
 
 const ROOT: ParentLink = { parentKey: null, inferred: false, warning: "" };

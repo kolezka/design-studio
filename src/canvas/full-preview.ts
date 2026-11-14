@@ -1,5 +1,5 @@
 // The modal that shows one draft version at its real size.
-import { byId, onClick } from "./dom";
+import { byId, onClick, part } from "./dom";
 
 export interface FullPreviewHandlers {
   /** The user pressed the button that switches between selecting and using the draft. */
@@ -39,7 +39,7 @@ export class FullPreview {
 
   /** Where the request editor goes while the preview is open. */
   get body(): Element {
-    return this.dialog.querySelector(".dialog-body") ?? this.dialog;
+    return part(this.dialog, ".dialog-body");
   }
 
   /** Opens the dialog for a version. The caller loads the draft into `frame`. */

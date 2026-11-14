@@ -5,7 +5,7 @@ import type { Shot } from "../screenshot/capture";
 import { findChrome } from "../screenshot/chrome";
 import { type ShootOptions, shootAll, shootFile } from "../screenshot/shoot-drafts";
 import { type Theme, themeFrom } from "../shared/bootstrap";
-import { EXIT, UsageError, wholeNumber } from "./exit";
+import { EXIT, CliError, wholeNumber } from "./exit";
 
 const USAGE = `usage: design-studio shot <draft.html> [--out file.png] [--width 1440] [--height 900] [--theme light|dark]
        design-studio shot --all <design dir> [--theme light,dark] [--width 1440] [--height 900]`;
@@ -13,20 +13,20 @@ const USAGE = `usage: design-studio shot <draft.html> [--out file.png] [--width 
 /** `design-studio shot`: renders drafts to PNGs and exits with what happened. */
 export function runShot(args: string[]): never {
   const { values, positionals } = parseOptions(args);
+  const chrome = findChrome();
+  if (!chrome) {
+    throw new CliError("No Chrome or Chromium found. Set CHROME_PATH, or use a browser automation tool to screenshot instead.", EXIT.noChrome);
+  }
   const size = { width: wholeNumber("width", values.width, 1), height: wholeNumber("height", values.height, 1) };
   const settleMs = wholeNumber("wait", values.wait, 0);
 
   const [file] = positionals;
-  const designDir = values.all === undefined ? undefined : resolve(values.all);
-  if (designDir === undefined && (!file || !existsSync(file))) throw new UsageError(USAGE);
+  const designDir = values.all ? resolve(values.all) : undefined;
+  if (designDir === undefined && (!file || !existsSync(file))) throw new CliError(USAGE);
   if (designDir !== undefined && !existsSync(join(designDir, "drafts"))) {
-    throw new UsageError(`No drafts found: ${join(designDir, "drafts")} does not exist.`);
+    throw new CliError(`No drafts found: ${join(designDir, "drafts")} does not exist.`);
   }
 
-  const chrome = findChrome();
-  if (!chrome) {
-    throw new UsageError("No Chrome or Chromium found. Set CHROME_PATH, or use a browser automation tool to screenshot instead.", EXIT.noChrome);
-  }
   const options: ShootOptions = { chrome, settleMs, ...size };
 
   // A whole round is reviewed in both themes; a single draft in one.
@@ -50,7 +50,7 @@ function parseOptions(args: string[]) {
       },
     });
   } catch (error) {
-    throw new UsageError(`${(error as Error).message}\n${USAGE}`);
+    throw new CliError(`${(error as Error).message}\n${USAGE}`);
   }
 }
 

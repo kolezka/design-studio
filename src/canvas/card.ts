@@ -1,5 +1,5 @@
 // The card of one draft version: heading, live preview, notes and two actions.
-import { button, create } from "./dom";
+import { button, create, part } from "./dom";
 import type { VersionNode } from "./graph/types";
 
 export interface Card {
@@ -30,7 +30,6 @@ export function createCard(key: string, frame: HTMLIFrameElement, preview: { wid
 
   const viewport = create("div", "frame");
   viewport.style.aspectRatio = `${preview.width} / ${preview.height}`;
-  frame.loading = "lazy";
   frame.style.width = `${preview.width}px`;
   frame.style.height = `${preview.height}px`;
   frame.style.transform = `scale(${PREVIEW_WIDTH / preview.width})`;
@@ -62,14 +61,13 @@ export function describeCard(card: Card, node: VersionNode, position: number): v
     ["Warning: ", node.warning],
     ["Parent: ", parent],
   ];
-  card.element.querySelector(".node-info")?.replaceChildren(
+  part(card.element, ".node-info").replaceChildren(
     ...notes.filter(([, value]) => typeof value === "string" && value).map(([label, value]) => create("p", "", label + value)),
   );
 }
 
 function setText(card: Card, selector: string, text: string): void {
-  const part = card.element.querySelector(selector);
-  if (part) part.textContent = text;
+  part(card.element, selector).textContent = text;
 }
 
 function textOr(value: unknown, fallback: string): string {

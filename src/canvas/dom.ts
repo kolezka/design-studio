@@ -5,6 +5,13 @@ export function byId<T extends Element = HTMLElement>(id: string): T {
   return found as unknown as T;
 }
 
+/** A part of `parent` that is known to be there. */
+export function part<T extends Element = HTMLElement>(parent: Element, selector: string): T {
+  const found = parent.querySelector<T>(selector);
+  if (!found) throw new Error(`Nothing matches ${selector}`);
+  return found;
+}
+
 export function create<Tag extends keyof HTMLElementTagNameMap>(tag: Tag, className = "", text?: string): HTMLElementTagNameMap[Tag] {
   const created = document.createElement(tag);
   if (className) created.className = className;

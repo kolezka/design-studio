@@ -26,7 +26,9 @@ export function shootFile(file: string, theme: Theme, out: string | undefined, o
  */
 export function shootAll(root: string, themes: Theme[], options: ShootOptions): Shot[] {
   const shotsDir = join(root, "shots");
-  const drafts = scanDrafts(join(root, "drafts")).flatMap((target) => target.drafts);
+  // Screenshots are local files for whoever owns the folder, so linked drafts count.
+  // The canvas serves drafts over HTTP and leaves them out.
+  const drafts = scanDrafts(join(root, "drafts"), "follow").flatMap((target) => target.drafts);
   const shots: Shot[] = [];
 
   for (const theme of themes) {

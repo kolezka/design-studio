@@ -10,8 +10,8 @@ export const EXIT = {
   pageThrew: 4,
 } as const;
 
-/** A mistake in how the command was called. Printed without a stack trace. */
-export class UsageError extends Error {
+/** A failure the caller can fix. Its message is printed without a stack trace. */
+export class CliError extends Error {
   constructor(
     message: string,
     readonly exitCode: number = EXIT.usage,
@@ -23,6 +23,6 @@ export class UsageError extends Error {
 /** Reads a whole number option, such as a width or a port. */
 export function wholeNumber(option: string, value: string, minimum: number): number {
   const number = Number(value);
-  if (!Number.isInteger(number) || number < minimum) throw new UsageError(`--${option} must be a whole number of at least ${minimum}, got "${value}".`);
+  if (!Number.isInteger(number) || number < minimum) throw new CliError(`--${option} must be a whole number of at least ${minimum}, got "${value}".`);
   return number;
 }

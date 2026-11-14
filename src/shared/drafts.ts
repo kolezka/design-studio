@@ -1,6 +1,4 @@
 // What the server reports about `.design/drafts`. The canvas page receives it as JSON.
-import { isRecord } from "./guards";
-
 /** `meta.json` as written by whoever made the draft. Nothing in it is trusted. */
 export type DraftMeta = Record<string, unknown>;
 
@@ -37,5 +35,3 @@ export function versionOfFile(fileName: string): number | null {
 export function versionFile(version: number): string {
   return `v${version}.html`;
 }
-
-export { isRecord };

@@ -1,6 +1,6 @@
 // The `design-studio` command. Each subcommand is loaded only when it is asked for:
 // the canvas bundles its browser code at start-up, which a screenshot run does not need.
-import { EXIT, UsageError } from "./exit";
+import { EXIT, CliError } from "./exit";
 
 const USAGE = `usage: design-studio <command> [options]
 
@@ -37,7 +37,7 @@ try {
   const run = await COMMANDS[name]!();
   await run(args);
 } catch (error) {
-  if (!(error instanceof UsageError)) throw error;
+  if (!(error instanceof CliError)) throw error;
   console.error(error.message);
   process.exit(error.exitCode);
 }

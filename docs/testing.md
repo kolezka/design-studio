@@ -1,5 +1,7 @@
 # How the skill was tested
 
+This is a dated report. The scripts it names, `shot.ts` and `canvas.ts`, are now `design-studio shot` and `design-studio canvas`.
+
 2026-11-09, Claude Opus 5.5 workers, Bun 1.4.4, Chrome. Fixture: the old Docify admin page (`src/web` at docify `fc71771`), one plain HTML page with a sources table and a search form, plus `config.ts` for a Settings screen that did not exist yet. Each run: same task ("the UI is ugly, show me proposals I can compare in the browser, add Settings"), user unavailable, 40 tool calls.
 
 ## Without the skill (baseline)

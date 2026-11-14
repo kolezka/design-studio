@@ -1,4 +1,5 @@
-import { isDraftName, isRecord } from "../../shared/drafts";
+import { isDraftName } from "../../shared/drafts";
+import { isRecord } from "../../shared/guards";
 import { type Draft, isVersionNumber } from "./types";
 
 /**

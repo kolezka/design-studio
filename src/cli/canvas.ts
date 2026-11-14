@@ -2,14 +2,14 @@ import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { startCanvasServer } from "../server/canvas-server";
-import { UsageError, wholeNumber } from "./exit";
+import { CliError, wholeNumber } from "./exit";
 
 /** `design-studio canvas`: serves the canvas until the process is killed. */
 export function runCanvas(args: string[]): void {
   const { values } = parseOptions(args);
   const root = resolve(values.dir);
   const draftsDir = join(root, "drafts");
-  if (!existsSync(draftsDir)) throw new UsageError(`No drafts found: ${draftsDir} does not exist.`);
+  if (!existsSync(draftsDir)) throw new CliError(`No drafts found: ${draftsDir} does not exist.`);
 
   const server = startCanvasServer({ root, port: wholeNumber("port", values.port, 0) });
   const address = `http://127.0.0.1:${server.port}/`;
@@ -28,7 +28,7 @@ function parseOptions(args: string[]) {
       },
     });
   } catch (error) {
-    throw new UsageError(`${(error as Error).message}\nusage: design-studio canvas [--dir .design] [--port 4870] [--open]`);
+    throw new CliError(`${(error as Error).message}\nusage: design-studio canvas [--dir .design] [--port 4870] [--open]`);
   }
 }
 

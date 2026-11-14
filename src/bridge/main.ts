@@ -49,11 +49,11 @@ function report(target: EventTarget | null | undefined, fromContextMenu = false)
 }
 
 function reportBox(elements: Element[]): void {
-  const [only] = elements;
-  if (!only) return;
+  const [first] = elements;
+  if (!first) return;
   if (elements.length === 1) {
-    highlighter.show(only, false);
-    report(only);
+    highlighter.show(first, false);
+    report(first);
     return;
   }
   post({
