@@ -22,7 +22,7 @@ test.skipIf(!chrome || !browser)("pointer focus waits for click while keyboard f
   await run("set", "viewport", "1600", "1000");
   await run("open", `http://127.0.0.1:${server.port}/?static=1`);
   await run("find", "text", "Full preview", "click");
-  await run("wait", "--fn", "document.querySelector('#dialog').open && document.querySelector('#dialogFrame').src.includes('ds_nonce')");
+  await run("wait", "--fn", "document.querySelector('#dialog').open && document.querySelector('#dialogFrame').dataset.ready === document.querySelector('#dialogFrame').dataset.nonce");
   const point = await evaluate("(() => { const r = document.querySelector('#dialogFrame').getBoundingClientRect(); return { x: r.left + 40, y: r.top + 30 }; })()");
   await run("mouse", "move", String(point.x), String(point.y));
   await run("mouse", "down");

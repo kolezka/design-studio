@@ -51,12 +51,24 @@ const bridge = `<script>
     }, '*');
   };
   window.addEventListener('message', (event) => {
-    if (event.source !== window.parent || !event.data ||
-        event.data.type !== 'design-studio:select' ||
-        typeof event.data.enabled !== 'boolean') return;
-    enabled = event.data.enabled;
-    if (!enabled) clearHighlight();
+    if (event.source !== window.parent || !event.data) return;
+    const { type, enabled: next, x, y } = event.data;
+    if (type === 'design-studio:select' && typeof next === 'boolean') {
+      enabled = next;
+      if (!enabled) clearHighlight();
+    } else if (type === 'design-studio:select-at' && enabled &&
+        Number.isFinite(x) && Number.isFinite(y)) {
+      // The parent caught a click that Chrome did not route into this frame yet.
+      const target = document.elementFromPoint(x, y);
+      if (target) { highlight(target, false); select(target); }
+    }
   });
+  // Report readiness once the DOM is parsed and painted, not on load, so slow
+  // images or fonts do not leave the draft clickable while selection is on.
+  const ready = () => requestAnimationFrame(() => requestAnimationFrame(() =>
+    window.parent.postMessage({ type: 'design-studio:ready', nonce }, '*')));
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready, { once: true });
+  else ready();
   const eventElement = (event) => event.composedPath().find(node => node instanceof Element);
   document.addEventListener('pointerover', (event) => { if (enabled) highlight(eventElement(event), false); }, true);
   document.addEventListener('pointerout', (event) => { if (enabled && !event.relatedTarget) clearHighlight(); }, true);
