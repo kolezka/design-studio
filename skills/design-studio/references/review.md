@@ -3,9 +3,9 @@
 ## Rendering
 
 ```bash
-bun <skill-dir>/scripts/shot.ts --all .design                       # latest version of every draft, light and dark, plus shots/sheet-<theme>-1440x900.png
-bun <skill-dir>/scripts/shot.ts --all .design --width 390 --height 844 --theme light   # phone pass
-bun <skill-dir>/scripts/shot.ts .design/drafts/<target>/<draft>/v2.html --theme dark --height 1800   # one draft, long page
+design-studio shot --all .design                       # latest version of every draft, light and dark, plus shots/sheet-<theme>-1440x900.png
+design-studio shot --all .design --width 390 --height 844 --theme light   # phone pass
+design-studio shot .design/drafts/<target>/<draft>/v2.html --theme dark --height 1800   # one draft, long page
 ```
 
 Open the PNGs with the file-reading tool and look at them. The sheets give the overview; open the single PNG wherever the sheet shows something odd or too small to judge.

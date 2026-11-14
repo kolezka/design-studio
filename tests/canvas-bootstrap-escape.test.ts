@@ -1,10 +1,10 @@
 import { afterAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { graphPage } from "../skills/design-studio/scripts/canvas-ui";
+import { renderCanvasPage } from "../src/server/page";
 
 const project = "Project </script><script>globalThis.injected=true</script>\u2028\u2029 \\ $& $` $' $$";
 const root = "Root </script><script>globalThis.injected=true</script>\u2029\u2028 \\ $& $` $' $$";
-const html = graphPage(project, root, "light", 1440, 900, []);
+const html = renderCanvasPage({ projectName: project, root, theme: "light", width: 1440, height: 900, targets: [] });
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", Bun.which("google-chrome"), Bun.which("chromium")].find((p): p is string => !!p && existsSync(p));
 const browser = Bun.which("agent-browser");
 const session = `canvas-bootstrap-${process.pid}`;

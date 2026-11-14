@@ -30,7 +30,7 @@ test.skipIf(!browser || !chrome)("live updates add version nodes without replaci
   const dir = join(root, ".design", "drafts", "home", "draft");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "v1.html"), "<h1>First</h1>");
-  server = Bun.spawn(["bun", join(import.meta.dir, "..", "skills/design-studio/scripts/canvas.ts"), "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  server = Bun.spawn(["bun", join(import.meta.dir, "..", "bin", "design-studio"), "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const reader = server.stdout.getReader(); let output = "";
   while (!/http:\/\/127\.0\.0\.1:\d+\//.test(output)) { const next = await reader.read(); if (next.done) throw new Error("server exited"); output += new TextDecoder().decode(next.value); }
   await run("open", output.match(/http:\/\/127\.0\.0\.1:\d+\//)![0]);
@@ -53,7 +53,7 @@ test.skipIf(!browser || !chrome)("live version updates preserve the selected pre
   mkdirSync(dir, { recursive: true });
   const selectedFile = join(dir, "v1.html");
   writeFileSync(selectedFile, "<!doctype html><h1>Selected preview element</h1>");
-  server = Bun.spawn(["bun", join(import.meta.dir, "..", "skills/design-studio/scripts/canvas.ts"), "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  server = Bun.spawn(["bun", join(import.meta.dir, "..", "bin", "design-studio"), "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const reader = server.stdout.getReader(); let output = "";
   while (!/http:\/\/127\.0\.0\.1:\d+\//.test(output)) { const next = await reader.read(); if (next.done) throw new Error("server exited"); output += new TextDecoder().decode(next.value); }
   await run("set", "viewport", "1600", "1000");

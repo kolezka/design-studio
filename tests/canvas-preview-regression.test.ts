@@ -1,13 +1,13 @@
 import { afterAll, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
-import { graphPage } from "../skills/design-studio/scripts/canvas-ui";
-import { instrumentDraft } from "../skills/design-studio/scripts/canvas-bridge";
+import { renderCanvasPage } from "../src/server/page";
+import { instrumentDraft } from "../src/server/instrument-draft";
 
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium", Bun.which("google-chrome"), Bun.which("chromium")].find((p): p is string => !!p && existsSync(p));
 const browser = Bun.which("agent-browser");
 const session = `canvas-preview-regression-${process.pid}`;
 const targets = [{ target: "home", drafts: ["first", "second"].map(id => ({ target: "home", id, meta: { title: id }, metaError: null, versions: [0, 1] })) }];
-const server = Bun.serve({ port: 0, fetch(req) { const url = new URL(req.url); return new Response(url.pathname === "/" ? graphPage("Test", "/tmp", "light", Number(url.searchParams.get("w")) || 390, Number(url.searchParams.get("h")) || 844, targets) : instrumentDraft("<!doctype html><h1>Preview</h1>"), { headers: { "Content-Type": "text/html" } }); } });
+const server = Bun.serve({ port: 0, fetch(req) { const url = new URL(req.url); return new Response(url.pathname === "/" ? renderCanvasPage({ projectName: "Test", root: "/tmp", theme: "light", width: Number(url.searchParams.get("w")) || 390, height: Number(url.searchParams.get("h")) || 844, targets }) : instrumentDraft("<!doctype html><h1>Preview</h1>"), { headers: { "Content-Type": "text/html" } }); } });
 afterAll(() => { if (browser) Bun.spawnSync([browser, "--session", session, "close"], { stdout: "ignore", stderr: "ignore" }); server.stop(); });
 async function run(...args: string[]) {
   const proc = Bun.spawn([browser!, "--session", session, ...args], { stdout: "pipe", stderr: "pipe" });

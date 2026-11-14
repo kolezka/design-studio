@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CANVAS = process.env.CANVAS_SCRIPT || join(import.meta.dir, "..", "skills", "design-studio", "scripts", "canvas.ts");
+const CANVAS = process.env.CANVAS_SCRIPT || join(import.meta.dir, "..", "bin", "design-studio");
 const CHROME = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium", Bun.which("google-chrome"), Bun.which("chromium")].find((path): path is string => !!path && existsSync(path));
 const BROWSER = Bun.which("agent-browser");
 const session = `canvas-header-${process.pid}`;
@@ -33,7 +33,7 @@ test.skipIf(!CHROME || !BROWSER)("theme and size switches use canvas colours and
   const dir = join(root, ".design", "drafts", "home", "base");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "v1.html"), "<h1>base</h1>");
-  server = Bun.spawn(["bun", CANVAS, "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  server = Bun.spawn(["bun", CANVAS, "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const reader = server.stdout.getReader();
   let output = "";
   while (!/http:\/\/127\.0\.0\.1:\d+\//.test(output)) {

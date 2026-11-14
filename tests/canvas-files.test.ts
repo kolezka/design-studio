@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
-const canvas = join(import.meta.dir, "..", "skills", "design-studio", "scripts", "canvas.ts");
+const canvas = join(import.meta.dir, "..", "bin", "design-studio");
 const processes: ReturnType<typeof Bun.spawn>[] = [];
 const roots: string[] = [];
 afterEach(async () => {
@@ -13,7 +13,7 @@ afterEach(async () => {
 });
 
 async function start(root: string) {
-  const process = Bun.spawn(["bun", canvas, "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  const process = Bun.spawn(["bun", canvas, "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   processes.push(process);
   const reader = process.stdout.getReader();
   let output = "";

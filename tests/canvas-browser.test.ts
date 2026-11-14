@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CANVAS = join(import.meta.dir, "..", "skills", "design-studio", "scripts", "canvas.ts");
+const CANVAS = join(import.meta.dir, "..", "bin", "design-studio");
 const CHROME = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Applications/Chromium.app/Contents/MacOS/Chromium", Bun.which("google-chrome"), Bun.which("chromium")].find((p): p is string => !!p && existsSync(p));
 const BROWSER = Bun.which("agent-browser");
 const processes: ReturnType<typeof Bun.spawn>[] = [];
@@ -46,7 +46,7 @@ async function start(extraDrafts = 0, live = false) {
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "v1.html"), `<h1>Extra ${i}</h1>`);
   }
-  const canvas = Bun.spawn(["bun", CANVAS, "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  const canvas = Bun.spawn(["bun", CANVAS, "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   processes.push(canvas);
   const reader = canvas.stdout.getReader();
   let output = "";

@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CANVAS = join(import.meta.dir, "..", "skills", "design-studio", "scripts", "canvas.ts");
+const CANVAS = join(import.meta.dir, "..", "bin", "design-studio");
 const processes: ReturnType<typeof Bun.spawn>[] = [];
 const roots: string[] = [];
 afterEach(async () => {
@@ -30,7 +30,7 @@ async function fixture() {
   mkdirSync(broken, { recursive: true });
   writeFileSync(join(broken, "meta.json"), "{ invalid");
   writeFileSync(join(broken, "v1.html"), "broken");
-  const process = Bun.spawn(["bun", CANVAS, "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  const process = Bun.spawn(["bun", CANVAS, "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   processes.push(process);
   const reader = process.stdout.getReader();
   let output = "";

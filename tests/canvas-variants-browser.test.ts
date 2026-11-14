@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const canvas = join(import.meta.dir, "..", "skills/design-studio/scripts/canvas.ts");
+const canvas = join(import.meta.dir, "..", "bin", "design-studio");
 const browser = Bun.which("agent-browser");
 const chrome = [process.env.CHROME_PATH, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", Bun.which("google-chrome"), Bun.which("chromium")].find(p => p && existsSync(p));
 const session = `canvas-variants-${process.pid}`;
@@ -57,7 +57,7 @@ async function start() {
   draft("settings", "omitted-b", { variant: "omitted" });
   draft("home", "cycle-a", { variant: "cycle-a", variantParent: "cycle-b" });
   draft("settings", "cycle-b", { variant: "cycle-b", variantParent: "cycle-a" });
-  server = Bun.spawn(["bun", canvas, "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
+  server = Bun.spawn(["bun", canvas, "canvas", "--port", "0"], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const reader = server.stdout.getReader(); let output = "";
   while (!/http:\/\/127\.0\.0\.1:\d+\//.test(output)) {
     const next = await reader.read();
