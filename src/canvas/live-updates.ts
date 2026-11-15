@@ -3,7 +3,8 @@ import { announce } from "./dom";
 
 /** Calls `onDrafts` with the server's current drafts whenever the design directory changes. */
 export function followDrafts(onDrafts: (targets: unknown[]) => void): void {
-  const events = new EventSource("/events");
+  // Both URLs are relative to the page, so they follow it under a path prefix.
+  const events = new EventSource("events");
   let latestRequest = 0;
 
   const refresh = async () => {
@@ -27,7 +28,7 @@ export function followDrafts(onDrafts: (targets: unknown[]) => void): void {
 }
 
 async function fetchDrafts(): Promise<unknown[]> {
-  const response = await fetch("/api/drafts", { cache: "no-store" });
+  const response = await fetch("api/drafts", { cache: "no-store" });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const body: unknown = await response.json();
   if (!isRecord(body) || !Array.isArray(body.targets)) throw new Error("Invalid response");

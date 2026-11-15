@@ -7,10 +7,13 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./locale/*.json": "./locale/*.json"
   },
   "files": [
     "index.js",
+    "canvas.js",
+    "client.js",
     "cordis.patch.yml",
     "locale/*.json",
     "bun.lock"
@@ -21,6 +24,12 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
     }
   }
 }

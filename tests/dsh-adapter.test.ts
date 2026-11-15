@@ -59,6 +59,10 @@ test("the standalone DSH adapter resolves the published runtime and registers th
     expect(output.body.content).not.toContain("CLAUDE_PLUGIN_ROOT");
     const usage = spawnSync("bun", [cli, "--help"], { cwd: fixture, encoding: "utf8" });
     expect({ status: usage.status, usage: usage.stdout.split("\n")[0] }).toEqual({ status: 0, usage: "usage: design-studio <command> [options]" });
+    // DSH finds the sidebar tab through these two fields, and a packed adapter must carry both halves.
+    expect(pkg.dsh.client).toEqual({ platform: "web", inject: ["@deepseek-ai/dsh-client-ui-sidebar-right"] });
+    expect(existsSync(join(dsh, pkg.exports["./client"]))).toBe(true);
+    expect(pkg.files).toEqual(expect.arrayContaining(["canvas.js", "client.js"]));
     expect(output.warnings).toEqual([]);
     expect(output.commands).toEqual([]);
     expect(output.sections).toEqual([]);

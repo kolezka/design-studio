@@ -3,6 +3,7 @@ import type { Theme } from "../shared/bootstrap";
 import { MESSAGE, NONCE_PARAM, type SelectAtMessage, type SelectModeMessage } from "../shared/protocol";
 import { animate } from "./dom";
 import type { VersionNode } from "./graph/types";
+import { freshNonce } from "./nonce";
 
 export class Previews {
   /** Changes on every live update, so a rewritten draft is never served from cache. */
@@ -22,11 +23,12 @@ export class Previews {
    * its messages, so anything still in flight from the previous document is ignored.
    */
   load(frame: HTMLIFrameElement, node: VersionNode): void {
-    const nonce = crypto.randomUUID();
+    const nonce = freshNonce();
     frame.dataset.nonce = nonce;
     delete frame.dataset.ready;
     const query = new URLSearchParams({ theme: this.theme, refresh: String(this.generation), [NONCE_PARAM]: nonce });
-    frame.src = `/d/${encodeURIComponent(node.target)}/${encodeURIComponent(node.id)}/v${node.version}.html?${query}`;
+    // Relative to the page, so the canvas also works when served under a path prefix.
+    frame.src = `./d/${encodeURIComponent(node.target)}/${encodeURIComponent(node.id)}/v${node.version}.html?${query}`;
   }
 
   /** Loads the version again. `rewritten` fades the new content in once it arrives. */
