@@ -16,7 +16,7 @@ After updating the clone, run the frozen install again before using the adapter.
 To inspect the adapter without installing it in a DSH profile:
 
 ```bash
-bun x claude-plugin-dsh@0.2.0 inspect .
+bun x claude-plugin-dsh@0.2.1 inspect .
 ```
 
 ## The canvas in the right sidebar
@@ -31,4 +31,4 @@ The canvas still listens on `127.0.0.1` only. DSH forwards `/design-studio/<sess
 
 `dsh/canvas.js` is the host side of the tab (the route and the canvas process) and `dsh/client.js` is the browser side. `client.js` is written by hand in the bundle form DSH loads, so there is still no build step. DSH reads it through `dsh.client` and `exports["./client"]` in `dsh/package.json`.
 
-The adapter imports `claude-plugin-dsh` directly. When changing that dependency, update `dsh/package.json` and run `bun install --cwd dsh` to refresh `dsh/bun.lock`. Do not use the runtime's `sync` or `scaffold` commands here: version 0.2.0 generates a vendored runtime.
+The adapter imports `claude-plugin-dsh` directly. When changing that dependency, update `dsh/package.json` and run `bun install --cwd dsh` to refresh `dsh/bun.lock`. Do not use the runtime's `sync` or `scaffold` commands here: as of 0.2.1 they generate a vendored runtime.
