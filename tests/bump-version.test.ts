@@ -56,11 +56,13 @@ test("a bump moves every manifest to the new version and changes nothing else", 
 });
 
 test("a dependency pinned to the same number is not bumped", () => {
-  const dir = fixture((_file, text) => text.replace(/"version": "[^"]*"/, '"version": "0.2.0"'));
-  expect(JSON.parse(read(dir)[1]).dependencies["claude-plugin-dsh"]).toBe("0.2.0");
-  expect(bumpManifests(dir, "patch")).toBe("0.2.1");
-  expect(versions(dir)).toEqual(["0.2.1", "0.2.1"]);
-  expect(JSON.parse(read(dir)[1]).dependencies["claude-plugin-dsh"]).toBe("0.2.0");
+  const runtimeVersion = JSON.parse(read(root)[1]).dependencies["claude-plugin-dsh"];
+  const dir = fixture(setVersion(runtimeVersion));
+  expect(JSON.parse(read(dir)[1]).dependencies["claude-plugin-dsh"]).toBe(runtimeVersion);
+  const bumpedVersion = nextVersion(runtimeVersion, "patch");
+  expect(bumpManifests(dir, "patch")).toBe(bumpedVersion);
+  expect(versions(dir)).toEqual([bumpedVersion, bumpedVersion]);
+  expect(JSON.parse(read(dir)[1]).dependencies["claude-plugin-dsh"]).toBe(runtimeVersion);
 });
 
 test("a refused bump leaves every manifest untouched", () => {
