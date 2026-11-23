@@ -64,7 +64,7 @@ export class CanvasApp {
     window.addEventListener("message", (event) => this.receive(event));
     document.addEventListener("pointerdown", (event) => this.forwardPress(event), true);
     // `?static` gives tests a page that never changes under them.
-    if (!new URLSearchParams(location.search).has("static")) followDrafts((targets) => this.update(targets));
+    if (!new URLSearchParams(location.search).has("static")) followDrafts(this.bootstrap.root, (targets) => this.update(targets));
   }
 
   // ---- the graph

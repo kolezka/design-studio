@@ -17,6 +17,7 @@ const drafts = join(project, ".design", "drafts", "home");
 
 let handler: Handler | undefined;
 let dispose: (() => void) | undefined;
+let beforeFeed: (() => void) | undefined;
 let host: Server;
 let base = "";
 
@@ -56,7 +57,14 @@ beforeAll(async () => {
     effect: (start: () => () => void) => (dispose = start()),
   };
   serveCanvas(ctx, join(import.meta.dir, ".."));
-  host = createServer((req, res) => (handler ? handler(req, res) : res.writeHead(503).end()));
+  host = createServer((req, res) => {
+    if (req.url?.split('?')[0]?.endsWith('/events') && beforeFeed) {
+      const switchBrief = beforeFeed;
+      beforeFeed = undefined;
+      switchBrief();
+    }
+    return handler ? handler(req, res) : res.writeHead(503).end();
+  });
   await new Promise<void>((resolve) => host.listen(0, "127.0.0.1", resolve));
   base = `http://127.0.0.1:${(host.address() as AddressInfo).port}`;
 });
@@ -97,3 +105,22 @@ test.skipIf(!CHROME || !BROWSER)("the canvas works when it is served below a pat
   }
   expect(visible).toEqual(['/design-studio/s1/d/shop/cart/v1.html']);
 }, 60_000);
+
+test.skipIf(!CHROME || !BROWSER)('a brief switch before the event stream opens also replaces the project header', async () => {
+  const pointer = join(project, '.design/sessions/s1');
+  const drafts = join(project, '.design/briefs/next/drafts/shop/cart');
+  mkdirSync(drafts, { recursive: true });
+  writeFileSync(join(drafts, 'v1.html'), '<h1>Next cart</h1>');
+  writeFileSync(pointer, '@legacy');
+  beforeFeed = () => writeFileSync(pointer, 'next');
+  await browser('open', `${base}/design-studio/s1/?theme=dark`);
+  let header = '';
+  for (let attempt = 0; attempt < 30; attempt++) {
+    header = JSON.parse(await browser('eval', '--json', "document.querySelector('#project')?.textContent ?? ''")).data.result;
+    if (header === 'next') break;
+    await Bun.sleep(100);
+  }
+  expect(beforeFeed).toBeUndefined();
+  expect(header).toBe('next');
+  expect(await loadedPreviews(1)).toEqual(['/design-studio/s1/d/shop/cart/v1.html']);
+}, 30_000);

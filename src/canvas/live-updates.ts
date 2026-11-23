@@ -2,7 +2,7 @@ import { isRecord } from "../shared/guards";
 import { announce } from "./dom";
 
 /** Calls `onDrafts` with the server's current drafts whenever the design directory changes. */
-export function followDrafts(onDrafts: (targets: unknown[]) => void): void {
+export function followDrafts(root: string, onDrafts: (targets: unknown[]) => void): void {
   // Both URLs are relative to the page, so they follow it under a path prefix.
   const events = new EventSource("events");
   let latestRequest = 0;
@@ -10,10 +10,16 @@ export function followDrafts(onDrafts: (targets: unknown[]) => void): void {
   const refresh = async () => {
     const request = ++latestRequest;
     try {
-      const targets = await fetchDrafts();
+      const snapshot = await fetchDrafts();
       // A newer request is on its way, and its answer is the one to show.
       if (request !== latestRequest) return;
-      onDrafts(targets);
+      // The selected brief may have changed while there was no event stream.
+      if (snapshot.root !== root) {
+        events.close();
+        location.reload();
+        return;
+      }
+      onDrafts(snapshot.targets);
       if (events.readyState === EventSource.OPEN) announce("Live updates connected");
     } catch (error) {
       console.error("Cannot refresh drafts:", error);
@@ -28,10 +34,10 @@ export function followDrafts(onDrafts: (targets: unknown[]) => void): void {
   events.onerror = () => announce("Live updates reconnecting");
 }
 
-async function fetchDrafts(): Promise<unknown[]> {
+async function fetchDrafts(): Promise<{ root: string; targets: unknown[] }> {
   const response = await fetch("api/drafts", { cache: "no-store" });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const body: unknown = await response.json();
-  if (!isRecord(body) || !Array.isArray(body.targets)) throw new Error("Invalid response");
-  return body.targets;
+  if (!isRecord(body) || typeof body.root !== 'string' || !Array.isArray(body.targets)) throw new Error("Invalid response");
+  return { root: body.root, targets: body.targets };
 }
