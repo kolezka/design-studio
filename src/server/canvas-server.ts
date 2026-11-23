@@ -40,7 +40,7 @@ export function startCanvasServer({ root, port }: CanvasServerOptions): Bun.Serv
       return new Response(page, { headers: { "content-type": HTML } });
     }
     if (url.pathname === "/api/drafts" && request.method === "GET") {
-      return Response.json({ targets: listDrafts() }, { headers: { "cache-control": "no-store" } });
+      return Response.json({ root, targets: listDrafts() }, { headers: { "cache-control": "no-store" } });
     }
     if (url.pathname === "/events") return changes.subscribe();
     return draftResponse(draftsDir, url.pathname) ?? new Response("not found", { status: 404 });
