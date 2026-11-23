@@ -13,7 +13,7 @@ const pluginRoot = join(import.meta.dir, "..");
 const scratch = mkdtempSync(join(tmpdir(), "design-studio-dsh-canvas-"));
 const withDrafts = join(scratch, "with-drafts");
 const withoutDrafts = join(scratch, "without-drafts");
-const directories: Record<string, string> = { drafted: withDrafts, empty: withoutDrafts };
+const directories: Record<string, string> = { drafted: withDrafts, fresh: withDrafts, empty: withoutDrafts };
 
 let signedIn = true;
 let handler: Handler | undefined;
@@ -81,7 +81,14 @@ test("a session without drafts gets a page that says so", async () => {
   expect((await fetch(`${base}/design-studio/empty/api/drafts`)).status).toBe(404);
 });
 
+test("a fresh session in a workspace with legacy drafts does not silently reopen them", async () => {
+  expect(await (await fetch(`${base}/design-studio/fresh/`)).text()).toContain('No drafts yet');
+  expect((await fetch(`${base}/design-studio/fresh/d/home/hero/v1.html`)).status).toBe(404);
+});
+
 test("a session with drafts gets its canvas, drafts and change feed through DSH", async () => {
+  mkdirSync(join(withDrafts, '.design/sessions'), { recursive: true });
+  writeFileSync(join(withDrafts, '.design/sessions/drafted'), '@legacy');
   const page = await fetch(`${base}/design-studio/drafted/?theme=dark`);
   expect(page.status).toBe(200);
   expect(page.headers.get("content-type")).toContain("text/html");

@@ -4,6 +4,9 @@ import { EXIT, CliError } from "./exit";
 
 const USAGE = `usage: design-studio <command> [options]
 
+  brief new <slug> | brief resume <slug|@legacy>
+      Select a design brief and print its directory and DSH preview URL.
+
   canvas [--dir .design] [--port 4870] [--open]
       Serve the proposal canvas for a design directory.
 
@@ -16,6 +19,7 @@ const USAGE = `usage: design-studio <command> [options]
 type Command = (args: string[]) => Promise<void> | void;
 
 const COMMANDS: Record<string, () => Promise<Command>> = {
+  brief: async () => (await import("./brief")).runBrief,
   canvas: async () => (await import("./canvas")).runCanvas,
   shot: async () => (await import("./shot")).runShot,
 };

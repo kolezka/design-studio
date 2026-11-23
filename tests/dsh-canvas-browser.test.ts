@@ -45,6 +45,8 @@ async function loadedPreviews(count: number): Promise<string[]> {
 
 beforeAll(async () => {
   writeDraft("hero");
+  mkdirSync(join(project, '.design/sessions'), { recursive: true });
+  writeFileSync(join(project, '.design/sessions/s1'), '@legacy');
   const ctx = {
     webServer: { register: (route: { handler: Handler }) => ((handler = route.handler), () => (handler = undefined)) },
     connection: { requestRejection: () => undefined },
@@ -82,4 +84,16 @@ test.skipIf(!CHROME || !BROWSER)("the canvas works when it is served below a pat
   await loadedPreviews(2);
   const page = JSON.parse(await browser("eval", "--json", "({ path: location.pathname, theme: document.documentElement.dataset.theme })")).data.result;
   expect(page).toEqual({ path: "/design-studio/s1/", theme: "light" });
+
+  const fresh = join(project, '.design/briefs/store/drafts/shop/cart');
+  mkdirSync(fresh, { recursive: true });
+  writeFileSync(join(fresh, 'v1.html'), '<h1>Fresh cart</h1>');
+  writeFileSync(join(project, '.design/sessions/s1'), 'store');
+  let visible: string[] = [];
+  for (let attempt = 0; attempt < 20; attempt++) {
+    visible = await loadedPreviews(1);
+    if (visible.includes('/design-studio/s1/d/shop/cart/v1.html')) break;
+    await Bun.sleep(200);
+  }
+  expect(visible).toEqual(['/design-studio/s1/d/shop/cart/v1.html']);
 }, 60_000);
