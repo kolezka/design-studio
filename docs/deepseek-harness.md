@@ -21,7 +21,7 @@ bun x claude-plugin-dsh@0.2.1 inspect .
 
 ## The canvas in the right sidebar
 
-In the DSH web app the adapter adds a **Design Studio** tab to the right sidebar. Open it from the sidebar's start page. It shows the canvas for the session's working directory, reading `.design/` there, and says so when that folder has no drafts yet.
+In the DSH web app the adapter adds a **Design Studio** tab to the right sidebar. Open it from the sidebar's start page. It starts empty until this session selects a brief. Run `design-studio brief new <slug>` in the project for a fresh topic. The command returns the design directory (`.design/briefs/<slug>`) and the DSH preview URL for `sidebar_open`. Run `design-studio brief resume <slug>` to continue a named brief, or `design-studio brief resume @legacy` to explicitly open the old `.design/drafts` collection. Switching briefs changes the open canvas without deleting earlier work.
 
 You do not start the canvas yourself for this tab. The adapter runs `design-studio canvas` for the session when the tab asks for it, and stops it five minutes after the last tab closes. It needs `bun` on the `PATH` of the DSH host process.
 

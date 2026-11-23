@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync, watchFile, unwatchFile } from 'node:fs'
 import { request } from 'node:http'
 import { join } from 'node:path'
 
@@ -46,9 +46,21 @@ async function respond(ctx, canvases, req, res) {
   const session = ctx.sessions.get(sessionIdFrom(match[1]))
   if (session === undefined) return end(res, 404, 'unknown session')
 
-  const root = join(ctx.workingDirectory.get(session), '.design')
+  const base = join(ctx.workingDirectory.get(session), '.design')
+  const id = sessionIdFrom(match[1])
+  if (!/^[\w-]+$/.test(id)) return end(res, 404, 'invalid session')
+  let root, brief
+  const selection = join(base, 'sessions', id)
+  try {
+    brief = readFileSync(selection, 'utf8')
+    if (brief === '@legacy') root = base
+    else if (/^[a-z0-9][a-z0-9-]{0,79}$/.test(brief)) root = join(base, 'briefs', brief)
+    else return end(res, 500, 'Invalid active design brief.')
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error
+  }
   const path = match[2]
-  if (!existsSync(join(root, 'drafts'))) {
+  if (!root || !existsSync(join(root, 'drafts'))) {
     if (path !== '/') return end(res, 404, 'not found')
     return end(res, 200, emptyPage(root), { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
   }
@@ -60,6 +72,18 @@ async function respond(ctx, canvases, req, res) {
     return end(res, 502, `The design canvas did not start: ${error.message}`)
   }
   forward(canvas, path + url.search, req, res)
+  if (path === '/events') {
+    const changed = () => {
+      let current
+      try { current = readFileSync(selection, 'utf8') } catch { /* Missing or unreadable: recheck through the authenticated page. */ }
+      if (current === brief || res.destroyed) return
+      if (!res.headersSent) res.writeHead(200, { 'content-type': 'text/event-stream' })
+      res.end('event: brief-changed\ndata: reload\n\n')
+    }
+    watchFile(selection, { persistent: false, interval: 500 }, changed)
+    res.once('close', () => unwatchFile(selection, changed))
+    changed()
+  }
 }
 
 /** The session id from the address, or '' (no such session) when it is not valid percent-encoding. */
@@ -98,7 +122,7 @@ function end(res, status, body = '', headers = { 'content-type': 'text/plain; ch
 }
 
 function emptyPage(root) {
-  const where = join(root, 'drafts').replace(/[&<>"]/g, (char) => `&#${char.charCodeAt(0)};`)
+  const where = (root ? join(root, 'drafts') : 'design-studio brief new <slug>').replace(/[&<>"]/g, (char) => `&#${char.charCodeAt(0)};`)
   return `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="5"><title>Design Studio</title>
 <body style="font:14px system-ui;margin:2rem;color:#555;color-scheme:light dark">
 <p>No drafts yet. Ask for a design and they will show up here.</p><p><code>${where}</code></p>`

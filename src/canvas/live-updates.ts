@@ -22,6 +22,7 @@ export function followDrafts(onDrafts: (targets: unknown[]) => void): void {
   };
 
   // Opening counts as a change: drafts may have moved on while the stream was down.
+  events.addEventListener('brief-changed', () => location.reload());
   events.onopen = refresh;
   events.onmessage = refresh;
   events.onerror = () => announce("Live updates reconnecting");
