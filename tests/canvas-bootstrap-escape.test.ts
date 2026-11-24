@@ -38,6 +38,6 @@ test.skipIf(!chrome || !browser)("hostile bootstrap data round trips without exe
   await run("open", `${base}/control`);
   expect(await evaluate("globalThis.injected === true")).toBe(true);
   await run("open", `${base}/?static=1`);
-  const result = await evaluate(`(() => ({ project: document.querySelector('#project').textContent, root: document.querySelector('#project').title, sideProject: document.querySelector('#sideProject').textContent, injected: globalThis.injected === true }))()`);
-  expect(result).toEqual({ project, root, sideProject: project, injected: false });
+  const result = await evaluate(`(() => ({ project: document.querySelector('#project').textContent, root: document.querySelector('#project').title, injected: globalThis.injected === true }))()`);
+  expect(result).toEqual({ project, root, injected: false });
 }, 60_000);

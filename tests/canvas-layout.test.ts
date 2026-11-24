@@ -62,6 +62,8 @@ test.skipIf(!CHROME || !BROWSER)("phone previews with long metadata do not overl
     });
     return { canvas: { left: canvas.left, right: canvas.right, top: canvas.top, bottom: canvas.bottom }, cards };
   })()`);
+  expect(result.canvas.left).toBe(0);
+  expect(result.canvas.right).toBe(1600);
   expect(result.cards).toHaveLength(3);
   const base = result.cards.find((card: { title: string }) => card.title === "Base");
   const sibling = result.cards.find((card: { title: string }) => card.title === "Sibling");
