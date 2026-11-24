@@ -107,13 +107,6 @@ header {
   display: flex;
   height: calc(100dvh - 64px);
 }
-aside.sidebar {
-  width: 218px;
-  flex: none;
-  padding: 28px 22px;
-  border-right: 1px solid var(--line);
-  background: var(--panel);
-}
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.13em;
@@ -121,19 +114,8 @@ aside.sidebar {
   font-weight: 700;
   color: var(--muted);
 }
-.sidebar h2 {
-  font: 24px Georgia;
-  margin: 8px 0;
-}
-.sidebar p, .muted {
+.muted {
   color: var(--muted);
-}
-.nav {
-  margin-top: 28px;
-  padding: 12px;
-  border-radius: 8px;
-  background: var(--soft);
-  font-weight: 650;
 }
 main {
   min-width: 0;
@@ -414,9 +396,6 @@ dialog::backdrop {
     flex: 0 1 40%;
     width: 100%;
     max-height: 40%;
-  }
-  .sidebar {
-    display: none !important;
   }
   .topline {
     padding: 14px;

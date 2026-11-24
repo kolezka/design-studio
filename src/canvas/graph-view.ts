@@ -60,7 +60,6 @@ export class GraphView {
       describeCard(card, node, index + 1);
     });
     this.arrange(addedEdges);
-    byId("count").textContent = String(nodes.length);
     byId("empty").hidden = nodes.length > 0;
   }
 

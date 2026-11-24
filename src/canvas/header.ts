@@ -18,7 +18,6 @@ export function showHeader({ projectName, root, theme, width, height }: CanvasBo
   const project = byId("project");
   project.textContent = projectName;
   project.title = root;
-  byId("sideProject").textContent = projectName;
 
   for (const choice of ["light", "dark"] as const) link(choice, choice, { width, height }, choice === theme);
   for (const [device, size] of Object.entries(DEVICES)) link(device, theme, size, size.width === width && size.height === height);
